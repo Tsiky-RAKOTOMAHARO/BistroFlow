@@ -15,7 +15,7 @@ CREATE TABLE MENU(
 CREATE TABLE COMMANDE(
     idcom VARCHAR(25) PRIMARY KEY,
     idtable VARCHAR(25),
-    nomcli VARCHAR(250) NOT NULL,
+    nomcli VARCHAR(150) NOT NULL,
     typecom VARCHAR(25) NOT NULL,
     datecom DATE NOT NULL,
     paye BOOLEAN DEFAULT false,
