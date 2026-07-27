@@ -1,6 +1,6 @@
 package com.projet.common.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class CommandeDTO {
 
@@ -9,7 +9,7 @@ public class CommandeDTO {
     private String idtable;
     private String nomcli;
     private String typecom;
-    private Date datecom;
+    private LocalDateTime datecom;
     private Boolean paye;
 
     // constructeurs
@@ -20,7 +20,7 @@ public class CommandeDTO {
         String idtable,
         String nomcli,
         String typecom,
-        Date datecom,
+        LocalDateTime datecom,
         Boolean paye
     ){
         this.idcom = idcom;
@@ -44,7 +44,7 @@ public class CommandeDTO {
     public String getTypecom(){
         return typecom;
     }
-    public Date getDatecom(){
+    public LocalDateTime getDatecom(){
         return datecom;
     }
     public Boolean isPaye(){
@@ -58,10 +58,18 @@ public class CommandeDTO {
     public void setTypecom(String typecom){
         this.typecom = typecom;
     }
-    public void setDatecom(Date datecom){
+    public void setDatecom(LocalDateTime datecom){
         this.datecom = datecom;
     }
     public void setPaye(Boolean paye){
         this.paye = paye;
+    }
+
+    public void setIdcom(String idcom){
+        this.idcom = idcom;
+    }
+
+    public void setIdtable(String idtable){
+        this.idtable = idtable;
     }
 }

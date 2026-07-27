@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mvn clean install
+
 #docker
 cd docker
 

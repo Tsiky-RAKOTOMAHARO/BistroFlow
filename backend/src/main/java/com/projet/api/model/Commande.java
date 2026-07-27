@@ -1,11 +1,16 @@
 package com.projet.api.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,6 +37,9 @@ public class Commande{
 
     @Column(name = "paye")
     private Boolean paye;
+
+    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LigneCommande> lignes = new ArrayList<>();
 
     // constructeurs
     public Commande(){}
@@ -87,5 +95,9 @@ public class Commande{
     }
     public void setPaye(Boolean paye){
         this.paye = paye;
+    }
+
+    public void setIdcom(String idcom) {
+        this.idcom = idcom;
     }
 }

@@ -78,4 +78,8 @@ public class Reserver{
     public void setDate_reserve(LocalDateTime date_reserve){
         this.date_reserve = date_reserve;
     }
+
+    public void setIdreserv(String idreserv) {
+        this.idreserv = idreserv;
+    }
 }

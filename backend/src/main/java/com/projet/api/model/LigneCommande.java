@@ -29,9 +29,9 @@ public class LigneCommande {
     private int quantite;
 
     // constructeurs
-    LigneCommande(){}
+    public LigneCommande(){}
 
-    LigneCommande(
+    public LigneCommande(
         String idligne,
         Commande commande,
         Menu menu,
@@ -66,5 +66,9 @@ public class LigneCommande {
     }
     public void setQuantite(int quantite){
         this.quantite = quantite;
+    }
+
+    public void setIdligne(String idligne) {
+        this.idligne = idligne;
     }
 }

@@ -27,7 +27,7 @@ public class RestaurantTable {
     }
 
     // Constructeur
-    public RestaurantTable(String idtable, Boolean actif, String designation, Boolean occupation) {
+    public RestaurantTable(String idtable, Boolean actif, String designation, boolean occupation) {
         this.idtable = idtable;
         this.actif = actif;
         this.designation = designation;

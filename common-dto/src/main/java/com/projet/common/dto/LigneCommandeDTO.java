@@ -9,9 +9,9 @@ public class LigneCommandeDTO {
     private int quantite;
 
     // constructeurs
-    LigneCommandeDTO(){}
+    public LigneCommandeDTO(){}
 
-    LigneCommandeDTO(
+    public LigneCommandeDTO(
         String idligne,
         String idcom,
         String idplat,
@@ -40,5 +40,15 @@ public class LigneCommandeDTO {
     // setters
     public void setQuantite(int quantite){
         this.quantite = quantite;
+    }
+
+    public void setIdligne(String idligne) {
+        this.idligne = idligne;
+    }
+    public void setIdcom(String idcom){
+        this.idcom = idcom;
+    }
+    public void setIdplat(String idplat){
+        this.idplat = idplat;
     }
 }

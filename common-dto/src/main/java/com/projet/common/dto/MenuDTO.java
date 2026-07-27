@@ -42,4 +42,8 @@ public class MenuDTO {
     public void setPu(int pu){
         this.pu = pu;
     }
+
+    public void setIdplat(String idplat) {
+        this.idplat =  idplat;
+    }
 }

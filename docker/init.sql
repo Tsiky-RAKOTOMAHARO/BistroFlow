@@ -9,7 +9,7 @@ CREATE TABLE MENU(
     idplat VARCHAR(25) PRIMARY KEY, 
     actif BOOLEAN NOT NULL DEFAULT true,
     nomplat VARCHAR(50) NOT NULL,
-    pu NUMERIC(10, 2) NOT NULL 
+    pu INT NOT NULL 
 );
 
 CREATE TABLE COMMANDE(
@@ -17,7 +17,7 @@ CREATE TABLE COMMANDE(
     idtable VARCHAR(25),
     nomcli VARCHAR(150) NOT NULL,
     typecom VARCHAR(25) NOT NULL,
-    datecom DATE NOT NULL,
+    datecom TIMESTAMP NOT NULL,
     paye BOOLEAN DEFAULT false,
 
     CONSTRAINT FK_commande_table

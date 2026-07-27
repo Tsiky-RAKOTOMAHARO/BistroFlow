@@ -1,5 +1,5 @@
 #!/bin/bash
-
+ 
 cd backend || exit
 
 # chargement .env
