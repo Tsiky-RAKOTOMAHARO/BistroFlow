@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -79,6 +80,9 @@ public class Commande{
     public Boolean isPaye(){
         return paye;
     }
+    public List<LigneCommande> getLignes() {
+        return lignes;
+    }
 
     // setters
     public void setRestaurantTable(RestaurantTable restaurantTable){
@@ -100,4 +104,8 @@ public class Commande{
     public void setIdcom(String idcom) {
         this.idcom = idcom;
     }
+    public void setLignes(List<LigneCommande> lignes) {
+        this.lignes = lignes;
+    }
+    
 }

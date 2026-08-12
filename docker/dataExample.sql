@@ -1,3 +1,4 @@
+-- Active: 1786523789682@@127.0.0.1@5432@gestion-restaurant
 
 INSERT INTO TABLE_ (idtable, actif, designation, occupation) VALUES
 ('T01', true, 'Table VIP 1', true),

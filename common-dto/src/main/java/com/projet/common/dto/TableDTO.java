@@ -5,14 +5,14 @@ public class TableDTO {
     private String idtable;
     private boolean actif;
     private String designation;
-    private Boolean occupation;
+    private boolean occupation;
 
     // Constructeur
     public TableDTO() {
     }
 
     // Constructeur 
-    public TableDTO(String idtable, Boolean actif, String designation, Boolean occupation) {
+    public TableDTO(String idtable, boolean actif, String designation, Boolean occupation) {
         this.idtable = idtable;
         this.actif = actif;
         this.designation = designation;
