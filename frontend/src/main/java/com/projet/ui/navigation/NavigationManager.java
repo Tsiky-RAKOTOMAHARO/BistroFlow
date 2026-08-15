@@ -25,8 +25,7 @@ public class NavigationManager {
     }
 
     /**
-     * Charge dynamiquement un fichier FXML dans le conteneur principal.
-     * @param fxmlPath chemin relatif vers le FXML dans resources (ex: "/fxml/tables-view.fxml")
+     * @param fxmlPath 
      */
     public void navigateTo(String fxmlPath) {
         if (contentArea == null) {
