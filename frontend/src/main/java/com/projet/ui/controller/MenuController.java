@@ -5,11 +5,10 @@ import com.projet.ui.config.AppContext;
 import com.projet.ui.viewmodel.MenuViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -20,6 +19,7 @@ public class MenuController implements Initializable {
     @FXML private TableColumn<MenuDTO, String> colId;
     @FXML private TableColumn<MenuDTO, String> colNom;
     @FXML private TableColumn<MenuDTO, Integer> colPrix;
+    @FXML private TableColumn<MenuDTO, Void> colActions;
 
     @FXML private TextField searchField;
     @FXML private TextField nomField;
@@ -31,16 +31,13 @@ public class MenuController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Colonnes du tableau
         colId.setCellValueFactory(new PropertyValueFactory<>("idplat"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nomplat"));
         colPrix.setCellValueFactory(new PropertyValueFactory<>("pu"));
 
-        // Binding liste + erreur
         menuTable.setItems(viewModel.getMenus());
         errorLabel.textProperty().bind(viewModel.errorMessageProperty());
 
-        // remplit le formulaire & met à jour le ViewModel
         menuTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             viewModel.selectedMenuProperty().set(selected);
             if (selected != null) {
@@ -52,20 +49,49 @@ public class MenuController implements Initializable {
             }
         });
 
+        setupActionsColumn();
         viewModel.loadAll();
+    }
+
+    private void setupActionsColumn() {
+        colActions.setCellFactory(param -> new TableCell<>() {
+            private final Button editBtn = new Button("Modifier");
+            private final Button deleteBtn = new Button("Supprimer");
+
+            {
+                editBtn.setOnAction(event -> {
+                    MenuDTO menu = getTableView().getItems().get(getIndex());
+                    if (menu != null) {
+                        menuTable.getSelectionModel().select(menu);
+                    }
+                });
+
+                deleteBtn.setOnAction(event -> {
+                    MenuDTO menu = getTableView().getItems().get(getIndex());
+                    if (menu != null) {
+                        viewModel.delete(menu.getIdplat());
+                        onNew();
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox container = new HBox(5, editBtn, deleteBtn);
+                    container.setAlignment(Pos.CENTER);
+                    setGraphic(container);
+                }
+            }
+        });
     }
 
     @FXML
     private void onSearch() {
         viewModel.search(searchField.getText());
-    }
-
-    @FXML
-    private void onDelete() {
-        MenuDTO selected = viewModel.selectedMenuProperty().get();
-        if (selected != null) {
-            viewModel.delete(selected.getIdplat());
-        }
     }
 
     @FXML

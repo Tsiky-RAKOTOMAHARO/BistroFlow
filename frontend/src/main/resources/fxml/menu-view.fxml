@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -19,8 +18,8 @@
     <top>
         <VBox styleClass="card, search-card" BorderPane.alignment="CENTER">
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField" promptText="Rechercher..."/>
-                <Button text="Rechercher" onAction="#onSearch"/>
+                <TextField fx:id="searchField" promptText="Rechercher un plat..."/>
+                <Button text="Rechercher" onAction="#onSearch" styleClass="button-search"/>
             </HBox>
         </VBox>
     </top>
@@ -30,17 +29,19 @@
 
             <VBox styleClass="card, table-card" spacing="10">
                 <Label text="Liste des menus" styleClass="card-title"/>
+                <Button text="Nouveau" onAction="#onNew" styleClass="button-secondary"/>
+                
                 <TableView fx:id="menuTable">
                     <columns>
-                        <TableColumn fx:id="colId" text="ID"/>
-                        <TableColumn fx:id="colNom" text="Nom"/>
-                        <TableColumn fx:id="colPrix" text="Prix"/>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="70"/>
+                        <TableColumn fx:id="colNom" text="Nom du plat" prefWidth="180"/>
+                        <TableColumn fx:id="colPrix" text="Prix (Ar)" prefWidth="90"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="160"/>
                     </columns>
                 </TableView>
             </VBox>
 
-            <VBox styleClass="card, form-card" spacing="10">
-
+            <VBox styleClass="card, form-card" spacing="12">
                 <Label text="Détails du menu" styleClass="card-title"/>
                 <Label fx:id="modeLabel" text="Mode : Création" styleClass="card-subtitle"/>
 
@@ -51,13 +52,11 @@
 
                 <VBox spacing="5">
                     <Label text="Prix (PU) :"/>
-                    <TextField fx:id="prixField" promptText="Ex: 12"/>
+                    <TextField fx:id="prixField" promptText="Ex: 12500"/>
                 </VBox>
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Button text="Enregistrer" onAction="#onSave"/>
-                    <Button text="Nouveau" onAction="#onNew"/>
-                    <Button text="Supprimer" onAction="#onDelete"/>
+                    <Button text="Enregistrer" onAction="#onSave" styleClass="button-primary"/>
                 </HBox>
 
                 <Label fx:id="errorLabel" wrapText="true" styleClass="error-label"/>
