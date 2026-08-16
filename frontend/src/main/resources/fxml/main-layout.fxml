@@ -15,7 +15,7 @@
    <left>
       <VBox prefWidth="220.0" spacing="15.0">
          
-         <Label text="RestoManager">
+         <Label text="Admin">
             <VBox.margin>
             </VBox.margin>
          </Label>

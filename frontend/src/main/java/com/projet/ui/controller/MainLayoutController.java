@@ -2,6 +2,8 @@ package com.projet.ui.controller;
 
 import com.projet.ui.navigation.NavigationManager;
 import com.projet.ui.view.MenuView;
+import com.projet.ui.view.TableView;
+
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 
@@ -29,8 +31,14 @@ public class MainLayoutController {
 
     @FXML
     private void showTablesView() {
-        System.out.println("Vue Tables pas encore branchée");
-    }
+        try {
+            TableView tableView = new TableView();
+            NavigationManager.getInstance().navigateTo(tableView.getRoot());
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la navigation vers la vue Tables : " + e.getMessage());
+            e.printStackTrace();
+        }
+}
 
     @FXML
     private void showReservationsView() {
