@@ -62,7 +62,7 @@ public class CommandeServiceImpl implements CommandeService {
     public CommandeDTO createCommande(CommandeDTO commandeDTO) {
         // 1. Génération de l'ID
         long totalCommandes = commandeRepository.count();
-        String newId = "CMD-" + (totalCommandes + 1);
+        String newId = "CMD-O" + (totalCommandes + 1);
 
         Commande commandeEntity = commandeMapper.toEntity(commandeDTO);
         commandeEntity.setIdcom(newId);

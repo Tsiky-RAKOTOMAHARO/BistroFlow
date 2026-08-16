@@ -1,10 +1,7 @@
 package com.projet.ui.navigation;
 
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
-
-import java.io.IOException;
 
 public class NavigationManager {
 
@@ -24,21 +21,11 @@ public class NavigationManager {
         this.contentArea = contentArea;
     }
 
-    /**
-     * @param fxmlPath 
-     */
-    public void navigateTo(String fxmlPath) {
+    
+    public void navigateTo(Parent view) {
         if (contentArea == null) {
             throw new IllegalStateException("Le conteneur contentArea n'a pas été initialisé.");
         }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent view = loader.load();
-            contentArea.getChildren().setAll(view);
-        } catch (IOException e) {
-            System.err.println("Erreur de chargement de la vue FXML : " + fxmlPath);
-            e.printStackTrace();
-        }
+        contentArea.getChildren().setAll(view);
     }
 }

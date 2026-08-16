@@ -41,7 +41,7 @@ public class RestaurantTableServiceImpl implements RestaurantTableService{
     public TableDTO createTable(TableDTO table) {
 
         long totalTables = tableRepository.count();
-        String newId = "T0-" + (totalTables + 1);
+        String newId = "TO" + (totalTables + 1);
 
         RestaurantTable tableEntity = tableMapper.toEntity(table);
 

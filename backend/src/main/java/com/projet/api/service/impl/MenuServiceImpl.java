@@ -44,7 +44,7 @@ public class MenuServiceImpl implements MenuService {
     public MenuDTO createMenu(MenuDTO menuDto) {
       
         long totalMenus = menuRepository.count();
-        String newId = "P0-" + (totalMenus + 1);
+        String newId = "PO" + (totalMenus + 1);
 
        
         Menu menuEntity = menuMapper.toEntity(menuDto);

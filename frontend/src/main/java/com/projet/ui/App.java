@@ -12,7 +12,7 @@ public class App extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main-layout.fxml"));
         Scene scene = new Scene(loader.load(), 1100, 700);
 
-        primaryStage.setTitle("Gestion de Restaurant");
+        primaryStage.setTitle("BistroFlow");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

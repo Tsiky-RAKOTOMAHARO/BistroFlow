@@ -51,7 +51,7 @@ public class ReserverServiceImpl implements ReserverService {
         String newId = reserverDTO.getIdreserv();
         if (newId == null || newId.isBlank()) {
             long totalReservations = reserverRepository.count();
-            newId = "RES-" + (totalReservations + 1);
+            newId = "RES-O" + (totalReservations + 1);
         }
 
         Reserver entity = reserverMapper.toEntity(reserverDTO);
