@@ -20,10 +20,12 @@
             </VBox.margin>
          </Label>
          
+         <Button fx:id="btnReservations" maxWidth="Infinity" text="Dashboard" onAction="#showReservationsView" alignment="BASELINE_LEFT" />
          <Button fx:id="btnTables" maxWidth="Infinity" text="Gestion Tables" onAction="#showTablesView" alignment="BASELINE_LEFT" />
-         <Button fx:id="btnMenus" maxWidth="Infinity" text="Menus &amp; Plats" onAction="#showMenusView" alignment="BASELINE_LEFT" />
-         <Button fx:id="btnReservations" maxWidth="Infinity" text="Réservations" onAction="#showReservationsView" alignment="BASELINE_LEFT" />
+         <Button fx:id="btnMenus" maxWidth="Infinity" text="Menus" onAction="#showMenusView" alignment="BASELINE_LEFT" />
          <Button fx:id="btnCommandes" maxWidth="Infinity" text="Commandes" onAction="#showCommandesView" alignment="BASELINE_LEFT" />
+         <Button fx:id="btnReservations" maxWidth="Infinity" text="Réservations" onAction="#showReservationsView" alignment="BASELINE_LEFT" />
+
       </VBox>
    </left>
 

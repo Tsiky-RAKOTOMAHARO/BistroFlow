@@ -17,10 +17,11 @@
             fx:controller="com.projet.ui.controller.TableController">
 
     <top>
-        <VBox styleClass="card, search-card" BorderPane.alignment="CENTER">
+        <VBox styleClass="card, search-card">
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField" promptText="Rechercher une table..."/>
                 <Button text="Rechercher" onAction="#onSearch" styleClass="button-search"/>
+                <Button text="Réinitialiser" onAction="#onResetSearch" styleClass="button-secondary"/>
             </HBox>
         </VBox>
     </top>
@@ -35,9 +36,9 @@
                 <TableView fx:id="tableTable">
                     <columns>
                         <TableColumn fx:id="colId" text="ID" prefWidth="70"/>
-                        <TableColumn fx:id="colDesignation" text="Désignation" prefWidth="150"/>
-                        <TableColumn fx:id="colOccupation" text="Occupée" prefWidth="90"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="190"/>
+                        <TableColumn fx:id="colDesignation" text="Désignation" prefWidth="180"/>
+                        <TableColumn fx:id="colOccupation" text="Occupée" prefWidth="80"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="160"/>
                     </columns>
                 </TableView>
             </VBox>
@@ -48,10 +49,10 @@
 
                 <VBox spacing="5">
                     <Label text="Désignation :"/>
-                    <TextField fx:id="designationField" promptText="Ex: Table Terrasse 1"/>
+                    <TextField fx:id="designationField" promptText="Ex: Table VIP 1"/>
                 </VBox>
 
-                <CheckBox fx:id="occupationCheckBox" text="Table occupée"/>
+                <CheckBox fx:id="occupationCheckBox" text="Occupée"/>
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Button text="Enregistrer" onAction="#onSave" styleClass="button-primary"/>

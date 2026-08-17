@@ -14,6 +14,7 @@ import com.projet.api.model.LigneCommande;
 import com.projet.api.model.Menu;
 import com.projet.api.model.RestaurantTable;
 import com.projet.api.repository.CommandeRepository;
+import com.projet.api.repository.LigneCommandeRepository;
 import com.projet.api.repository.MenuRepository;
 import com.projet.api.repository.RestaurantTableRepository;
 import com.projet.api.service.CommandeService;
@@ -26,6 +27,7 @@ public class CommandeServiceImpl implements CommandeService {
     private final CommandeRepository commandeRepository;
     private final RestaurantTableRepository tableRepository;
     private final MenuRepository menuRepository;
+    private final LigneCommandeRepository ligneCommandeRepository;
     private final CommandeMapper commandeMapper;
     private final LigneCommandeMapper ligneCommandeMapper;
 
@@ -33,11 +35,13 @@ public class CommandeServiceImpl implements CommandeService {
             CommandeRepository commandeRepository,
             RestaurantTableRepository tableRepository,
             MenuRepository menuRepository,
+            LigneCommandeRepository ligneCommandeRepository,
             CommandeMapper commandeMapper,
             LigneCommandeMapper ligneCommandeMapper) {
         this.commandeRepository = commandeRepository;
         this.tableRepository = tableRepository;
         this.menuRepository = menuRepository;
+        this.ligneCommandeRepository = ligneCommandeRepository;
         this.commandeMapper = commandeMapper;
         this.ligneCommandeMapper = ligneCommandeMapper;
     }
@@ -58,11 +62,10 @@ public class CommandeServiceImpl implements CommandeService {
     }
 
     @Override
-    @Transactional 
+    @Transactional
     public CommandeDTO createCommande(CommandeDTO commandeDTO) {
-        // 1. Génération de l'ID
         long totalCommandes = commandeRepository.count();
-        String newId = "CMD-O" + (totalCommandes + 1);
+        String newId = "CMD-" + (totalCommandes + 1);
 
         Commande commandeEntity = commandeMapper.toEntity(commandeDTO);
         commandeEntity.setIdcom(newId);
@@ -80,19 +83,7 @@ public class CommandeServiceImpl implements CommandeService {
             commandeEntity.setRestaurantTable(table);
         }
 
-        if (commandeDTO.getLignes() != null && !commandeDTO.getLignes().isEmpty()) {
-            for (LigneCommandeDTO ligneDTO : commandeDTO.getLignes()) {
-                LigneCommande ligneEntity = ligneCommandeMapper.toEntity(ligneDTO);
-
-                Menu menu = menuRepository.findById(ligneDTO.getIdplat())
-                        .orElseThrow(() -> new RuntimeException("Plat introuvable : " + ligneDTO.getIdplat()));
-                ligneEntity.setMenu(menu);
-
-                ligneEntity.setCommande(commandeEntity);
-
-                commandeEntity.getLignes().add(ligneEntity);
-            }
-        }
+        genererEtAttacherLignes(commandeEntity, commandeDTO.getLignes());
 
         Commande savedCommande = commandeRepository.save(commandeEntity);
         return commandeMapper.toDTO(savedCommande);
@@ -123,21 +114,31 @@ public class CommandeServiceImpl implements CommandeService {
         }
 
         existing.getLignes().clear();
-        if (commandeDTO.getLignes() != null) {
-            for (LigneCommandeDTO ligneDTO : commandeDTO.getLignes()) {
-                LigneCommande ligneEntity = ligneCommandeMapper.toEntity(ligneDTO);
-
-                Menu menu = menuRepository.findById(ligneDTO.getIdplat())
-                        .orElseThrow(() -> new RuntimeException("Plat introuvable : " + ligneDTO.getIdplat()));
-                ligneEntity.setMenu(menu);
-                ligneEntity.setCommande(existing);
-
-                existing.getLignes().add(ligneEntity);
-            }
-        }
+        genererEtAttacherLignes(existing, commandeDTO.getLignes());
 
         Commande updatedCommande = commandeRepository.save(existing);
         return commandeMapper.toDTO(updatedCommande);
+    }
+
+    private void genererEtAttacherLignes(Commande commandeEntity, List<LigneCommandeDTO> lignesDTO) {
+        if (lignesDTO == null || lignesDTO.isEmpty()) {
+            return;
+        }
+
+        long compteur = ligneCommandeRepository.count();
+
+        for (LigneCommandeDTO ligneDTO : lignesDTO) {
+            Menu menu = menuRepository.findById(ligneDTO.getIdplat())
+                    .orElseThrow(() -> new RuntimeException("Plat introuvable : " + ligneDTO.getIdplat()));
+
+            compteur++;
+            LigneCommande ligneEntity = ligneCommandeMapper.toEntity(ligneDTO);
+            ligneEntity.setIdligne("LGN-" + compteur);
+            ligneEntity.setMenu(menu);
+            ligneEntity.setCommande(commandeEntity);
+
+            commandeEntity.getLignes().add(ligneEntity);
+        }
     }
 
     @Override

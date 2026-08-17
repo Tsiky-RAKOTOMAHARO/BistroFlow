@@ -28,6 +28,7 @@ public class MenuController implements Initializable {
     @FXML private Label errorLabel;
 
     private final MenuViewModel viewModel = new MenuViewModel(AppContext.getMenuService());
+    private MenuDTO editingOriginal;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -110,31 +111,33 @@ public class MenuController implements Initializable {
         modeLabel.setText("Mode : Création");
     }
 
-    @FXML
+   @FXML
     private void onSave() {
         String nom = nomField.getText();
         String prixText = prixField.getText();
-
+    
         if (nom == null || nom.isBlank() || prixText == null || prixText.isBlank()) {
             viewModel.errorMessageProperty().set("Veuillez remplir tous les champs du formulaire.");
             return;
         }
-
+    
         try {
             int prix = Integer.parseInt(prixText.trim());
-
+        
             MenuDTO dto = new MenuDTO();
             dto.setNomplat(nom.trim());
             dto.setPu(prix);
-
-            MenuDTO selected = menuTable.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                dto.setIdplat(selected.getIdplat());
+        
+            if (editingOriginal != null) {
+                dto.setIdplat(editingOriginal.getIdplat());
+                dto.setActif(editingOriginal.isActif());
+            } else {
+                dto.setActif(true);
             }
-
+        
             viewModel.save(dto);
             onNew();
-
+        
         } catch (NumberFormatException e) {
             viewModel.errorMessageProperty().set("Le prix doit être un nombre entier valide.");
         }

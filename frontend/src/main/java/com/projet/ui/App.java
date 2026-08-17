@@ -11,6 +11,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main-layout.fxml"));
         Scene scene = new Scene(loader.load(), 1100, 700);
+        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
         primaryStage.setTitle("BistroFlow");
         primaryStage.setScene(scene);

@@ -1,6 +1,7 @@
 package com.projet.ui.controller;
 
 import com.projet.ui.navigation.NavigationManager;
+import com.projet.ui.view.CommandeView;
 import com.projet.ui.view.MenuView;
 import com.projet.ui.view.ReserverView;
 import com.projet.ui.view.TableView;
@@ -54,6 +55,12 @@ public class MainLayoutController {
 
     @FXML
     private void showCommandesView() {
-        System.out.println("Vue Commandes miandryyyy");
+        try {
+            CommandeView commandeView = new CommandeView();
+            NavigationManager.getInstance().navigateTo(commandeView.getRoot());
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la navigation vers la vue Commandes : " + e.getMessage());
+            e.printStackTrace();
     }
+}
 }

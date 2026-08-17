@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Separator?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.projet.ui.controller.CommandeController">
+
+    <top>
+        <VBox styleClass="card, search-card">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Rechercher une commande..."/>
+                <Button text="Rechercher" onAction="#onSearch" styleClass="button-search"/>
+                <Button text="Réinitialiser" onAction="#onResetSearch" styleClass="button-secondary"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.55">
+
+            <VBox styleClass="card, table-card" spacing="10">
+                <Label text="Liste des commandes" styleClass="card-title"/>
+                <Button text="Nouveau" onAction="#onNew" styleClass="button-secondary"/>
+
+                <TableView fx:id="commandeTable">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="70"/>
+                        <TableColumn fx:id="colNomcli" text="Client" prefWidth="130"/>
+                        <TableColumn fx:id="colTypecom" text="Type" prefWidth="90"/>
+                        <TableColumn fx:id="colPaye" text="Payé" prefWidth="60"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="220"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <VBox styleClass="card, form-card" spacing="12">
+                <Label text="Détails de la commande" styleClass="card-title"/>
+                <Label fx:id="modeLabel" text="Mode : Création" styleClass="card-subtitle"/>
+
+                <VBox spacing="5">
+                    <Label text="Client :"/>
+                    <TextField fx:id="nomcliField" promptText="Nom du client"/>
+                </VBox>
+
+                <VBox spacing="5">
+                    <Label text="Type de commande :"/>
+                    <ComboBox fx:id="typecomComboBox" maxWidth="Infinity"/>
+                </VBox>
+
+                <VBox spacing="5">
+                    <Label text="Table :"/>
+                    <ComboBox fx:id="tableComboBox" maxWidth="Infinity"/>
+                </VBox>
+
+                <Separator/>
+
+                <Label text="Lignes de commande" styleClass="card-title"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ComboBox fx:id="platComboBox" maxWidth="Infinity"/>
+                    <TextField fx:id="quantiteField" promptText="Qté" prefWidth="60"/>
+                    <Button text="Ajouter" onAction="#onAjouterLigne"/>
+                </HBox>
+
+                <TableView fx:id="lignesTable" prefHeight="150">
+                    <columns>
+                        <TableColumn fx:id="colLignePlat" text="Plat" prefWidth="140"/>
+                        <TableColumn fx:id="colLigneQuantite" text="Qté" prefWidth="50"/>
+                        <TableColumn fx:id="colLignePu" text="PU" prefWidth="60"/>
+                        <TableColumn fx:id="colLigneActions" text="" prefWidth="80"/>
+                    </columns>
+                </TableView>
+
+                <Label fx:id="totalLabel" text="Total : 0" styleClass="card-title"/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="Enregistrer" onAction="#onSave" styleClass="button-primary"/>
+                </HBox>
+
+                <Label fx:id="errorLabel" wrapText="true" styleClass="error-label"/>
+            </VBox>
+
+        </SplitPane>
+    </center>
+
+</BorderPane>

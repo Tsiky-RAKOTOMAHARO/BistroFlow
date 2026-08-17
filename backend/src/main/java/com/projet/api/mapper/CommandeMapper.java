@@ -11,11 +11,14 @@ import com.projet.common.dto.CommandeDTO;
 @Component
 public class CommandeMapper {
 
-    // toDTO
+    private final LigneCommandeMapper ligneCommandeMapper;
+
+    public CommandeMapper(LigneCommandeMapper ligneCommandeMapper) {
+        this.ligneCommandeMapper = ligneCommandeMapper;
+    }
+
     public CommandeDTO toDTO(Commande entity){
-        if (entity == null) {
-            return null;
-        }
+        if (entity == null) return null;
 
         CommandeDTO dto = new CommandeDTO();
         dto.setIdcom(entity.getIdcom());
@@ -27,15 +30,13 @@ public class CommandeMapper {
         if(entity.getRestaurantTable() != null){
             dto.setIdtable(entity.getRestaurantTable().getIdtable());
         }
+        dto.setLignes(ligneCommandeMapper.toDTOList(entity.getLignes()));
 
         return dto;
     }
 
-    // toEntity
     public Commande toEntity(CommandeDTO dto){
-        if (dto == null) {
-            return null;
-        }
+        if (dto == null) return null;
 
         Commande entity = new Commande();
         entity.setIdcom(dto.getIdcom());
@@ -48,9 +49,6 @@ public class CommandeMapper {
     }
 
     public List<CommandeDTO> toDTOList(List<Commande> entities){
-        return entities.stream()
-                        .map(this::toDTO)
-                        .collect(Collectors.toList());
+        return entities.stream().map(this::toDTO).collect(Collectors.toList());
     }
-    
 }
