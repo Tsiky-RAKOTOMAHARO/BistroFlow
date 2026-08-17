@@ -18,7 +18,7 @@
     <top>
         <VBox styleClass="card, search-card" BorderPane.alignment="CENTER">
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField" promptText="Rechercher un plat..."/>
+                <TextField fx:id="searchField" promptText="Rechercher un plat..." HBox.hgrow="ALWAYS"/>
                 <Button text="Rechercher" onAction="#onSearch" styleClass="button-search"/>
             </HBox>
         </VBox>
@@ -30,7 +30,7 @@
             <VBox styleClass="card, table-card" spacing="10">
                 <Label text="Liste des menus" styleClass="card-title"/>
                 <Button text="Nouveau" onAction="#onNew" styleClass="button-secondary"/>
-                
+
                 <TableView fx:id="menuTable">
                     <columns>
                         <TableColumn fx:id="colId" text="ID" prefWidth="70"/>

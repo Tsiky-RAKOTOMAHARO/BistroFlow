@@ -2,6 +2,7 @@ package com.projet.ui.controller;
 
 import com.projet.ui.navigation.NavigationManager;
 import com.projet.ui.view.MenuView;
+import com.projet.ui.view.ReserverView;
 import com.projet.ui.view.TableView;
 
 import javafx.fxml.FXML;
@@ -42,8 +43,14 @@ public class MainLayoutController {
 
     @FXML
     private void showReservationsView() {
-        System.out.println("Vue Réservations miandryyyy");
-    }
+        try {
+            ReserverView reserverView = new ReserverView();
+            NavigationManager.getInstance().navigateTo(reserverView.getRoot());
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la navigation vers la vue Réservations : " + e.getMessage());
+            e.printStackTrace();
+        }
+}
 
     @FXML
     private void showCommandesView() {

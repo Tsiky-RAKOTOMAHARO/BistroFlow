@@ -45,9 +45,13 @@ public class MenuController implements Initializable {
                 prixField.setText(String.valueOf(selected.getPu()));
                 modeLabel.setText("Mode : Modification (" + selected.getIdplat() + ")");
             } else {
+                nomField.clear();
+                prixField.clear();
                 modeLabel.setText("Mode : Création");
             }
         });
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.search(newVal));
 
         setupActionsColumn();
         viewModel.loadAll();
@@ -60,17 +64,20 @@ public class MenuController implements Initializable {
 
             {
                 editBtn.setOnAction(event -> {
-                    MenuDTO menu = getTableView().getItems().get(getIndex());
-                    if (menu != null) {
-                        menuTable.getSelectionModel().select(menu);
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        menuTable.getSelectionModel().select(index);
                     }
                 });
 
                 deleteBtn.setOnAction(event -> {
-                    MenuDTO menu = getTableView().getItems().get(getIndex());
-                    if (menu != null) {
-                        viewModel.delete(menu.getIdplat());
-                        onNew();
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        MenuDTO menu = getTableView().getItems().get(index);
+                        if (menu != null) {
+                            viewModel.delete(menu.getIdplat());
+                            onNew();
+                        }
                     }
                 });
             }
@@ -120,7 +127,7 @@ public class MenuController implements Initializable {
             dto.setNomplat(nom.trim());
             dto.setPu(prix);
 
-            MenuDTO selected = viewModel.selectedMenuProperty().get();
+            MenuDTO selected = menuTable.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 dto.setIdplat(selected.getIdplat());
             }

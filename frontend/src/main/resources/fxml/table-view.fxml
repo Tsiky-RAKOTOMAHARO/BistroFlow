@@ -47,11 +47,6 @@
                 <Label fx:id="modeLabel" text="Mode : Création" styleClass="card-subtitle"/>
 
                 <VBox spacing="5">
-                    <Label text="ID de la table :"/>
-                    <TextField fx:id="idTableField" promptText="Ex: T1"/>
-                </VBox>
-
-                <VBox spacing="5">
                     <Label text="Désignation :"/>
                     <TextField fx:id="designationField" promptText="Ex: Table Terrasse 1"/>
                 </VBox>

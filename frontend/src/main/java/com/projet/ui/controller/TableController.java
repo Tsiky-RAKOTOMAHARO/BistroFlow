@@ -22,7 +22,6 @@ public class TableController implements Initializable {
     @FXML private TableColumn<TableDTO, Void> colActions;
 
     @FXML private TextField searchField;
-    @FXML private TextField idTableField;
     @FXML private TextField designationField;
     @FXML private CheckBox occupationCheckBox;
     @FXML private Label modeLabel;
@@ -42,14 +41,16 @@ public class TableController implements Initializable {
         tableTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             viewModel.selectedTableProperty().set(selected);
             if (selected != null) {
-                idTableField.setText(selected.getIdtable());
-                idTableField.setDisable(true);
                 designationField.setText(selected.getDesignation());
                 occupationCheckBox.setSelected(selected.getOccupation());
                 modeLabel.setText("Mode : Modification (" + selected.getIdtable() + ")");
             } else {
                 modeLabel.setText("Mode : Création");
             }
+        });
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            viewModel.search(newVal);
         });
 
         setupActionsColumn();
@@ -110,8 +111,6 @@ public class TableController implements Initializable {
     private void onNew() {
         tableTable.getSelectionModel().clearSelection();
         viewModel.selectedTableProperty().set(null);
-        idTableField.clear();
-        idTableField.setDisable(false);
         designationField.clear();
         occupationCheckBox.setSelected(false);
         modeLabel.setText("Mode : Création");
@@ -119,18 +118,21 @@ public class TableController implements Initializable {
 
     @FXML
     private void onSave() {
-        String id = idTableField.getText();
         String designation = designationField.getText();
 
-        if (id == null || id.isBlank() || designation == null || designation.isBlank()) {
-            viewModel.errorMessageProperty().set("Veuillez remplir tous les champs obligatoires.");
+        if (designation == null || designation.isBlank()) {
+            viewModel.errorMessageProperty().set("Veuillez saisir une désignation.");
             return;
         }
 
         TableDTO dto = new TableDTO();
-        dto.setIdtable(id.trim());
         dto.setDesignation(designation.trim());
         dto.setOccupation(occupationCheckBox.isSelected());
+
+        TableDTO selected = viewModel.selectedTableProperty().get();
+        if (selected != null) {
+            dto.setIdtable(selected.getIdtable());
+        }
 
         viewModel.save(dto);
         onNew();
