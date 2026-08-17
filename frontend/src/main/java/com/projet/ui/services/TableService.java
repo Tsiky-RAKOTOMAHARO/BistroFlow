@@ -38,6 +38,7 @@ public class TableService {
         if (keyword == null || keyword.isBlank()) {
             return getAll();
         }
-        return apiClient.getList(ENDPOINT + "?search=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8), TableDTO.class);
+        String encoded = URLEncoder.encode(keyword.trim(), StandardCharsets.UTF_8);
+        return apiClient.getList(ENDPOINT + "?keyword=" + encoded, TableDTO.class);
     }
 }

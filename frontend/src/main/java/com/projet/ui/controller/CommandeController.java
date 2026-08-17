@@ -6,18 +6,14 @@ import com.projet.common.dto.MenuDTO;
 import com.projet.common.dto.TableDTO;
 import com.projet.ui.config.AppContext;
 import com.projet.ui.viewmodel.CommandeViewModel;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
@@ -70,7 +66,6 @@ public class CommandeController implements Initializable {
     private List<MenuDTO> menusDisponibles = List.of();
 
     private CommandeDTO editingOriginal;
-
     private final CommandeViewModel viewModel = new CommandeViewModel(AppContext.getCommandeService());
 
     @Override
@@ -88,38 +83,18 @@ public class CommandeController implements Initializable {
             }
         });
 
-        colActions.setCellFactory(col -> new TableCell<>() {
-            private final Button editBtn = new Button("Modifier");
-            private final Button payerBtn = new Button("Payer");
-            private final Button deleteBtn = new Button("Supprimer");
-            private final HBox box = new HBox(5, editBtn, payerBtn, deleteBtn);
-
-            {
-                editBtn.setOnAction(e -> populateForm(getTableView().getItems().get(getIndex())));
-                deleteBtn.setOnAction(e -> viewModel.delete(getTableView().getItems().get(getIndex()).getIdcom()));
-                payerBtn.setOnAction(e -> {
-                    CommandeDTO commande = getTableView().getItems().get(getIndex());
-                    commande.setPaye(true);
-                    viewModel.save(commande);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    CommandeDTO commande = getTableView().getItems().get(getIndex());
-                    payerBtn.setVisible(!Boolean.TRUE.equals(commande.isPaye()));
-                    payerBtn.setManaged(!Boolean.TRUE.equals(commande.isPaye()));
-                    setGraphic(box);
-                }
-            }
-        });
-
         commandeTable.setItems(viewModel.getCommandes());
         errorLabel.textProperty().bind(viewModel.errorMessageProperty());
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.search(newVal));
+
+        commandeTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            if (selected != null) {
+                populateForm(selected);
+            } else {
+                resetFormFields();
+            }
+        });
 
         typecomComboBox.setItems(FXCollections.observableArrayList("sur_place", "emporter"));
         typecomComboBox.setConverter(new StringConverter<>() {
@@ -127,7 +102,7 @@ public class CommandeController implements Initializable {
             public String toString(String value) {
                 if ("sur_place".equals(value)) return "Sur place";
                 if ("emporter".equals(value)) return "À emporter";
-              return "";
+                return "";
             }
             @Override
             public String fromString(String string) { return null; }
@@ -153,8 +128,8 @@ public class CommandeController implements Initializable {
         });
 
         colLignePlat.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().nomplat));
-        colLigneQuantite.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().quantite).asObject());
-        colLignePu.setCellValueFactory(data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().pu).asObject());
+        colLigneQuantite.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().quantite).asObject());
+        colLignePu.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().pu).asObject());
 
         colLigneActions.setCellFactory(col -> new TableCell<>() {
             private final Button removeBtn = new Button("X");
@@ -173,8 +148,66 @@ public class CommandeController implements Initializable {
 
         lignesTable.setItems(currentLignes);
 
+        setupActionsColumn();
         chargerListesReference();
         viewModel.loadAll();
+    }
+
+    private void setupActionsColumn() {
+        colActions.setCellFactory(param -> new TableCell<>() {
+            private final Button editBtn = new Button("Modifier");
+            private final Button payerBtn = new Button("Payer");
+            private final Button deleteBtn = new Button("Supprimer");
+
+            {
+                editBtn.setOnAction(event -> {
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        commandeTable.getSelectionModel().select(index);
+                    }
+                });
+
+                payerBtn.setOnAction(event -> {
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        CommandeDTO commande = getTableView().getItems().get(index);
+                        if (commande != null) {
+                            commande.setPaye(true);
+                            viewModel.save(commande);
+                        }
+                    }
+                });
+
+                deleteBtn.setOnAction(event -> {
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        CommandeDTO commande = getTableView().getItems().get(index);
+                        if (commande != null) {
+                            viewModel.delete(commande.getIdcom());
+                            onNew();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    CommandeDTO commande = getTableView().getItems().get(getIndex());
+                    if (commande != null) {
+                        boolean isPaye = Boolean.TRUE.equals(commande.isPaye());
+                        payerBtn.setVisible(!isPaye);
+                        payerBtn.setManaged(!isPaye);
+                    }
+                    HBox container = new HBox(5, editBtn, payerBtn, deleteBtn);
+                    container.setAlignment(Pos.CENTER);
+                    setGraphic(container);
+                }
+            }
+        });
     }
 
     private void chargerListesReference() {
@@ -229,14 +262,19 @@ public class CommandeController implements Initializable {
         modeLabel.setText("Mode : Modification (" + commande.getIdcom() + ")");
     }
 
+    private void resetFormFields() {
+        editingOriginal = null;
+        nomcliField.clear();
+        typecomComboBox.getSelectionModel().clearSelection();
+        tableComboBox.getSelectionModel().clearSelection();
+        currentLignes.clear();
+        recalculerTotal();
+        modeLabel.setText("Mode : Création");
+    }
+
     @FXML
     private void onSearch() {
-        String keyword = searchField.getText();
-        if (keyword == null || keyword.isBlank()) {
-            viewModel.errorMessageProperty().set("Saisis un mot-clé pour rechercher.");
-            return;
-        }
-        viewModel.search(keyword.trim());
+        viewModel.search(searchField.getText());
     }
 
     @FXML
@@ -247,13 +285,8 @@ public class CommandeController implements Initializable {
 
     @FXML
     private void onNew() {
-        editingOriginal = null;
-        nomcliField.clear();
-        typecomComboBox.getSelectionModel().clearSelection();
-        tableComboBox.getSelectionModel().clearSelection();
-        currentLignes.clear();
-        recalculerTotal();
-        modeLabel.setText("Mode : Création");
+        commandeTable.getSelectionModel().clearSelection();
+        resetFormFields();
     }
 
     @FXML
@@ -316,7 +349,7 @@ public class CommandeController implements Initializable {
         dto.setNomcli(nomcli.trim());
         dto.setTypecom(typecom);
         dto.setIdtable("sur_place".equals(typecom) ? table.getIdtable() : null);
-        dto.setPaye(editingOriginal != null ? editingOriginal.isPaye() : false);
+        dto.setPaye(editingOriginal != null && editingOriginal.isPaye());
 
         if (editingOriginal != null) {
             dto.setIdcom(editingOriginal.getIdcom());

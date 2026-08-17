@@ -5,13 +5,8 @@ import com.projet.ui.config.AppContext;
 import com.projet.ui.viewmodel.TableViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
@@ -32,9 +27,8 @@ public class TableController implements Initializable {
     @FXML private Label modeLabel;
     @FXML private Label errorLabel;
 
-    private TableDTO editingOriginal;
-
     private final TableViewModel viewModel = new TableViewModel(AppContext.getTableService());
+    private TableDTO editingOriginal;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -50,57 +44,96 @@ public class TableController implements Initializable {
             }
         });
 
-        colActions.setCellFactory(col -> new TableCell<>() {
+        tableTable.setItems(viewModel.getTables());
+        errorLabel.textProperty().bind(viewModel.errorMessageProperty());
+
+        tableTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            viewModel.selectedTableProperty().set(selected);
+            this.editingOriginal = selected;
+            if (selected != null) {
+                designationField.setText(selected.getDesignation());
+                occupationCheckBox.setSelected(Boolean.TRUE.equals(selected.getOccupation()));
+                modeLabel.setText("Mode : Modification (" + selected.getIdtable() + ")");
+            } else {
+                designationField.clear();
+                occupationCheckBox.setSelected(false);
+                modeLabel.setText("Mode : Création");
+            }
+        });
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.search(newVal));
+
+        setupActionsColumn();
+        viewModel.loadAll();
+    }
+
+    private void setupActionsColumn() {
+        colActions.setCellFactory(param -> new TableCell<>() {
+            private final Button toggleStatusBtn = new Button();
             private final Button editBtn = new Button("Modifier");
             private final Button deleteBtn = new Button("Supprimer");
-            private final HBox box = new HBox(5, editBtn, deleteBtn);
 
             {
-                editBtn.setOnAction(e -> populateForm(getTableView().getItems().get(getIndex())));
-                deleteBtn.setOnAction(e -> viewModel.delete(getTableView().getItems().get(getIndex()).getIdtable()));
+                toggleStatusBtn.setOnAction(event -> {
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        TableDTO table = getTableView().getItems().get(index);
+                        if (table != null) {
+                            boolean currentStatus = Boolean.TRUE.equals(table.getOccupation());
+                            table.setOccupation(!currentStatus);
+                            viewModel.save(table);
+                        }
+                    }
+                });
+
+                editBtn.setOnAction(event -> {
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        tableTable.getSelectionModel().select(index);
+                    }
+                });
+
+                deleteBtn.setOnAction(event -> {
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        TableDTO table = getTableView().getItems().get(index);
+                        if (table != null) {
+                            viewModel.delete(table.getIdtable());
+                            onNew();
+                        }
+                    }
+                });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    TableDTO table = getTableView().getItems().get(getIndex());
+                    if (table != null) {
+                        boolean isOccupied = Boolean.TRUE.equals(table.getOccupation());
+                        toggleStatusBtn.setText(isOccupied ? "Libérer" : "Occuper");
+                    }
+                    HBox container = new HBox(5, toggleStatusBtn, editBtn, deleteBtn);
+                    container.setAlignment(Pos.CENTER);
+                    setGraphic(container);
+                }
             }
         });
-
-        tableTable.setItems(viewModel.getTables());
-        errorLabel.textProperty().bind(viewModel.errorMessageProperty());
-
-        viewModel.loadAll();
-    }
-
-    private void populateForm(TableDTO item) {
-        editingOriginal = item;
-        viewModel.selectedTableProperty().set(item);
-        designationField.setText(item.getDesignation());
-        occupationCheckBox.setSelected(Boolean.TRUE.equals(item.getOccupation()));
-        modeLabel.setText("Mode : Modification (" + item.getIdtable() + ")");
     }
 
     @FXML
     private void onSearch() {
-        String keyword = searchField.getText();
-        if (keyword == null || keyword.isBlank()) {
-            viewModel.errorMessageProperty().set("Saisis un mot-clé pour rechercher.");
-            return;
-        }
-        viewModel.search(keyword.trim());
-    }
-
-    @FXML
-    private void onResetSearch() {
-        searchField.clear();
-        viewModel.loadAll();
+        viewModel.search(searchField.getText());
     }
 
     @FXML
     private void onNew() {
-        editingOriginal = null;
+        tableTable.getSelectionModel().clearSelection();
         viewModel.selectedTableProperty().set(null);
+        this.editingOriginal = null;
         designationField.clear();
         occupationCheckBox.setSelected(false);
         modeLabel.setText("Mode : Création");

@@ -21,13 +21,13 @@
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField" promptText="Rechercher une table..."/>
                 <Button text="Rechercher" onAction="#onSearch" styleClass="button-search"/>
-                <Button text="Réinitialiser" onAction="#onResetSearch" styleClass="button-secondary"/>
+                <!-- <Button text="Réinitialiser" onAction="#onResetSearch" styleClass="button-secondary"/> -->
             </HBox>
         </VBox>
     </top>
 
     <center>
-        <SplitPane dividerPositions="0.65">
+        <SplitPane dividerPositions="0.60">
 
             <VBox styleClass="card, table-card" spacing="10">
                 <Label text="Liste des tables" styleClass="card-title"/>
@@ -38,7 +38,7 @@
                         <TableColumn fx:id="colId" text="ID" prefWidth="70"/>
                         <TableColumn fx:id="colDesignation" text="Désignation" prefWidth="180"/>
                         <TableColumn fx:id="colOccupation" text="Occupée" prefWidth="80"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="160"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="240"/>
                     </columns>
                 </TableView>
             </VBox>

@@ -1,6 +1,5 @@
 package com.projet.api.controller;
 
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +29,13 @@ public class RestaurantTableController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllTables(@RequestParam(required = false) String statut) {
+    public ResponseEntity<Object> getAllTables(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String statut) {
+        
+        if (keyword != null && !keyword.isBlank()) {
+            return ResponseEntity.ok(tableService.searchTable(keyword.trim()));
+        }
         if (statut != null && !statut.isBlank()) {
             return ResponseEntity.ok(tableService.getByStatut(statut));
         }

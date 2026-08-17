@@ -22,7 +22,7 @@
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField" promptText="Rechercher une commande..."/>
                 <Button text="Rechercher" onAction="#onSearch" styleClass="button-search"/>
-                <Button text="Réinitialiser" onAction="#onResetSearch" styleClass="button-secondary"/>
+                <!-- <Button text="Réinitialiser" onAction="#onResetSearch" styleClass="button-secondary"/> -->
             </HBox>
         </VBox>
     </top>
