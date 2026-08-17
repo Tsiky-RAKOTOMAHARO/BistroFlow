@@ -2,6 +2,7 @@ package com.projet.ui.controller;
 
 import com.projet.ui.navigation.NavigationManager;
 import com.projet.ui.view.CommandeView;
+import com.projet.ui.view.DashboardView;
 import com.projet.ui.view.MenuView;
 import com.projet.ui.view.ReserverView;
 import com.projet.ui.view.TableView;
@@ -17,7 +18,18 @@ public class MainLayoutController {
     @FXML
     public void initialize() {
         NavigationManager.getInstance().setContentArea(contentArea);
-        showMenusView();
+        showDashboardView(); // Définie comme vue d'accueil par défaut
+    }
+
+    @FXML
+    private void showDashboardView() {
+        try {
+            DashboardView dashboardView = new DashboardView();
+            NavigationManager.getInstance().navigateTo(dashboardView.getRoot());
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la navigation vers le Tableau de Bord : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -40,7 +52,7 @@ public class MainLayoutController {
             System.err.println("Erreur lors de la navigation vers la vue Tables : " + e.getMessage());
             e.printStackTrace();
         }
-}
+    }
 
     @FXML
     private void showReservationsView() {
@@ -51,7 +63,7 @@ public class MainLayoutController {
             System.err.println("Erreur lors de la navigation vers la vue Réservations : " + e.getMessage());
             e.printStackTrace();
         }
-}
+    }
 
     @FXML
     private void showCommandesView() {
@@ -61,6 +73,6 @@ public class MainLayoutController {
         } catch (Exception e) {
             System.err.println("Erreur lors de la navigation vers la vue Commandes : " + e.getMessage());
             e.printStackTrace();
+        }
     }
-}
 }

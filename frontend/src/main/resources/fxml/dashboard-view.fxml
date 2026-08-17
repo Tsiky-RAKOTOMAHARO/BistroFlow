@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.projet.ui.controller.DashboardController"
+      style="-fx-padding: 20;">
+
+    <!-- En-tête -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Dashboard" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+        <Button text="Actualiser" onAction="#onRefresh" />
+        <Label fx:id="errorLabel" textFill="RED" />
+    </HBox>
+
+    <!-- Cartes KPI (Recette, Tables, Menus) -->
+    <HBox spacing="15.0">
+        <VBox style="-fx-background-color:; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="Recette Totale"  style="-fx-font-size: 14px;" />
+            <Label fx:id="totalRecetteLabel" text="0 Ar" textFill="WHITE" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+        </VBox>
+        <VBox style="-fx-background-color:; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="Nombre de Tables"  style="-fx-font-size: 14px;" />
+            <Label fx:id="totalTablesLabel" text="0" textFill="WHITE" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+        </VBox>
+        <VBox style="-fx-background-color:; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="Plats Actifs" textFill="WHITE" style="-fx-font-size: 14px;" />
+            <Label fx:id="totalMenusLabel" text="0" textFill="WHITE" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+        </VBox>
+    </HBox>
+
+    <!-- Graphiques et Tableaux -->
+    <HBox spacing="20.0">
+        <!-- Diagramme en bâtons sur 6 mois -->
+        <VBox  style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 10;">
+            <Label text="Évolution sur les 6 Derniers Mois" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+            <BarChart fx:id="monthlyBarChart">
+                <xAxis>
+                    <CategoryAxis label="Mois" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Valeur" />
+                </yAxis>
+            </BarChart>
+        </VBox>
+
+        <!-- Top 10 Plats -->
+        <VBox prefWidth="320" style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 10;">
+            <Label text="Top 10 Plats les Plus Commandés" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+            <TableView fx:id="topPlatsTable">
+                <columns>
+                    <TableColumn fx:id="colNomPlat" text="Plat" prefWidth="200" />
+                    <TableColumn fx:id="colQuantite" text="Ventes" prefWidth="90" />
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
+</VBox>
