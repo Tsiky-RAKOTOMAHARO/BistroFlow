@@ -18,9 +18,11 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -162,7 +164,7 @@ public class CommandeController implements Initializable {
         colActions.setCellFactory(param -> new TableCell<>() {
             private final Button editBtn = new Button("Modifier");
             private final Button payerBtn = new Button("Payer");
-            private final Button printBtn = new Button("Imprimer");
+            private final Button detailsBtn = new Button("Détails");
             private final Button deleteBtn = new Button("Supprimer");
 
             {
@@ -184,12 +186,12 @@ public class CommandeController implements Initializable {
                     }
                 });
 
-                printBtn.setOnAction(event -> {
+                detailsBtn.setOnAction(event -> {
                     int index = getIndex();
                     if (index >= 0 && index < getTableView().getItems().size()) {
                         CommandeDTO commande = getTableView().getItems().get(index);
                         if (commande != null) {
-                            handlePrintReceipt(commande);
+                            showDetailsDialog(commande);
                         }
                     }
                 });
@@ -218,7 +220,7 @@ public class CommandeController implements Initializable {
                         payerBtn.setVisible(!isPaye);
                         payerBtn.setManaged(!isPaye);
                     }
-                    HBox container = new HBox(5, editBtn, payerBtn, printBtn, deleteBtn);
+                    HBox container = new HBox(5, editBtn, payerBtn, detailsBtn, deleteBtn);
                     container.setAlignment(Pos.CENTER);
                     setGraphic(container);
                 }
@@ -226,35 +228,95 @@ public class CommandeController implements Initializable {
         });
     }
 
-    private void handlePrintReceipt(CommandeDTO commande) {
-        if (commande == null) return;
+    @SuppressWarnings("unchecked")
+    private void showDetailsDialog(CommandeDTO commande) {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Détails de la commande " + commande.getIdcom());
+        dialog.setHeaderText("Récapitulatif - Commande #" + commande.getIdcom());
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Enregistrer le reçu PDF");
-        fileChooser.setInitialFileName("recu_commande_" + (commande.getIdcom() != null ? commande.getIdcom() : "ticket") + ".pdf");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Fichiers PDF (*.pdf)", "*.pdf")
-        );
+        VBox content = new VBox(10);
+        content.setPrefWidth(420);
 
-        File file = fileChooser.showSaveDialog(commandeTable.getScene().getWindow());
-        if (file != null) {
-            try {
-                // Map d'association rapide ID -> MenuDTO pour résoudre les noms et prix des plats
-                Map<String, MenuDTO> menuMap = menusDisponibles.stream()
-                        .collect(Collectors.toMap(MenuDTO::getIdplat, m -> m, (a, b) -> a));
+        Label clientLbl = new Label("Client : " + (commande.getNomcli() != null ? commande.getNomcli() : "-"));
+        String typeTxt = "sur_place".equals(commande.getTypecom()) ? "Sur place" : "À emporter";
+        Label typeLbl = new Label("Type : " + typeTxt);
+        Label payeLbl = new Label("Statut : " + (Boolean.TRUE.equals(commande.isPaye()) ? "Payé" : "Non payé"));
 
-                PdfReceiptService.generateReceipt(commande, menuMap, file);
+        TableView<LigneAffichage> detailsTable = new TableView<>();
+        TableColumn<LigneAffichage, String> colPlat = new TableColumn<>("Plat");
+        colPlat.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().nomplat));
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Impression réussie");
-                alert.setHeaderText(null);
-                alert.setContentText("Le reçu PDF a été généré avec succès :\n" + file.getAbsolutePath());
-                alert.showAndWait();
-            } catch (Exception e) {
-                viewModel.errorMessageProperty().set("Erreur lors de la génération du PDF : " + e.getMessage());
+        TableColumn<LigneAffichage, Integer> colQte = new TableColumn<>("Qté");
+        colQte.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().quantite).asObject());
+
+        TableColumn<LigneAffichage, Integer> colPu = new TableColumn<>("PU");
+        colPu.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().pu).asObject());
+
+        detailsTable.getColumns().addAll(colPlat, colQte, colPu);
+        detailsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        detailsTable.setPrefHeight(180);
+
+        ObservableList<LigneAffichage> lines = FXCollections.observableArrayList();
+        int total = 0;
+        if (commande.getLignes() != null) {
+            for (LigneCommandeDTO l : commande.getLignes()) {
+                MenuDTO m = trouverMenu(l.getIdplat());
+                String nom = m != null ? m.getNomplat() : l.getIdplat();
+                int pu = m != null ? m.getPu() : 0;
+                lines.add(new LigneAffichage(l.getIdplat(), nom, pu, l.getQuantite()));
+                total += pu * l.getQuantite();
             }
         }
+        detailsTable.setItems(lines);
+
+        Label totalLbl = new Label("Total : " + total);
+        totalLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        Button printBtn = new Button("Imprimer le reçu PDF");
+        printBtn.getStyleClass().add("button-primary");
+        printBtn.setMaxWidth(Double.MAX_VALUE);
+        printBtn.setOnAction(e -> {
+            dialog.close();
+            handlePrintReceipt(commande);
+        });
+
+        content.getChildren().addAll(clientLbl, typeLbl, payeLbl, detailsTable, totalLbl, printBtn);
+
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.showAndWait();
     }
+
+    private void handlePrintReceipt(CommandeDTO commande) {
+    if (commande == null) return;
+
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Enregistrer le reçu PDF");
+    fileChooser.setInitialFileName("recu_commande_" + (commande.getIdcom() != null ? commande.getIdcom() : "ticket") + ".pdf");
+    fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Fichiers PDF (*.pdf)", "*.pdf")
+    );
+
+    File file = fileChooser.showSaveDialog(commandeTable.getScene().getWindow());
+    if (file != null) {
+        try {
+            Map<String, MenuDTO> menuMap = menusDisponibles.stream()
+                    .collect(Collectors.toMap(MenuDTO::getIdplat, m -> m, (a, b) -> a));
+
+            PdfReceiptService.generateReceipt(commande, menuMap, file);
+            viewModel.errorMessageProperty().set("");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Impression réussie");
+            alert.setHeaderText(null);
+            alert.setContentText("Le reçu PDF a été enregistré avec succès :\n" + file.getAbsolutePath());
+            alert.showAndWait();
+        } catch (Exception e) {
+            viewModel.errorMessageProperty().set("Erreur lors de la génération du PDF : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
 
     private void chargerListesReference() {
         try {

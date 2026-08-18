@@ -6,34 +6,30 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700.0" prefWidth="1000.0" 
+
+<BorderPane prefHeight="768.0" prefWidth="1024.0" 
+            stylesheets="@/css/theme.css, @/css/components.css, @/css/dashboard.css"
+            styleClass="root"
             xmlns="http://javafx.com/javafx/21" 
             xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="com.projet.ui.controller.MainLayoutController">
-   
-   <!-- Menu Latéral (Sidebar) -->
+    
    <left>
-      <VBox prefWidth="220.0" spacing="15.0">
+      <VBox prefWidth="260.0" spacing="12.0" styleClass="sidebar">
          
-         <Label text="Admin">
-            <VBox.margin>
-            </VBox.margin>
-         </Label>
+         <Label text="E-letra" styleClass="brand-title" />
          
-         <Button fx:id="btnReservations" maxWidth="Infinity" text="Dashboard" onAction="#showDashboardView" alignment="BASELINE_LEFT" />
-         <Button fx:id="btnTables" maxWidth="Infinity" text="Gestion Tables" onAction="#showTablesView" alignment="BASELINE_LEFT" />
-         <Button fx:id="btnMenus" maxWidth="Infinity" text="Menus" onAction="#showMenusView" alignment="BASELINE_LEFT" />
-         <Button fx:id="btnCommandes" maxWidth="Infinity" text="Commandes" onAction="#showCommandesView" alignment="BASELINE_LEFT" />
-         <Button fx:id="btnReservations" maxWidth="Infinity" text="Réservations" onAction="#showReservationsView" alignment="BASELINE_LEFT" />
+         <Button fx:id="btnDashboard" maxWidth="Infinity" text="Dashboard" onAction="#showDashboardView" alignment="BASELINE_LEFT" styleClass="menu-button" />
+         <Button fx:id="btnTables" maxWidth="Infinity" text="Gestion Tables" onAction="#showTablesView" alignment="BASELINE_LEFT" styleClass="menu-button" />
+         <Button fx:id="btnMenus" maxWidth="Infinity" text="Menus" onAction="#showMenusView" alignment="BASELINE_LEFT" styleClass="menu-button" />
+         <Button fx:id="btnCommandes" maxWidth="Infinity" text="Commandes" onAction="#showCommandesView" alignment="BASELINE_LEFT" styleClass="menu-button" />
+         <Button fx:id="btnReservations" maxWidth="Infinity" text="Réservations" onAction="#showReservationsView" alignment="BASELINE_LEFT" styleClass="menu-button" />
 
       </VBox>
    </left>
 
-   <!-- Conteneur Central Dynamique -->
    <center>
-      <StackPane fx:id="contentArea">
-        
-      </StackPane>
+      <StackPane fx:id="contentArea" styleClass="content-area" />
    </center>
    
 </BorderPane>

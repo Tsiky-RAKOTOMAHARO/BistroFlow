@@ -1,102 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.projet.ui.controller.CommandeController">
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane 
+    styleClass="dashboard-root"
+    stylesheets="@/css/commandes.css" 
+    xmlns="http://javafx.com/javafx/21" 
+    xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.projet.ui.controller.CommandeController">
 
     <top>
-        <VBox styleClass="card search-card" spacing="10">
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField" promptText="Rechercher une commande..."/>
-                <Button text="Rechercher" onAction="#onSearch" styleClass="button-search"/>
+        <VBox styleClass="dashboard-card" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
+                <TextField fx:id="searchField" promptText="Rechercher une commande..." />
+                <Button onAction="#onSearch" styleClass="button" text="Rechercher" />
             </HBox>
         </VBox>
     </top>
 
     <center>
-        <SplitPane dividerPositions="0.58">
+        <SplitPane dividerPositions="0.58" styleClass="transparent-split-pane">
+            <items>
+                <VBox spacing="15.0" styleClass="dashboard-card">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label styleClass="card-title" text="Liste des commandes" />
+                        <Button onAction="#onNew" styleClass="button-secondary" text="+ Nouveau" />
+                    </HBox>
 
-            <!-- Liste des commandes (Gauche) -->
-            <VBox styleClass="card table-card" spacing="10">
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Liste des commandes" styleClass="card-title"/>
-                    <Region/>
-                    <Button text="+ Nouveau" onAction="#onNew" styleClass="button-secondary"/>
-                </HBox>
-
-                <TableView fx:id="commandeTable">
-                    <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-                        <TableColumn fx:id="colNomcli" text="Client" prefWidth="120"/>
-                        <TableColumn fx:id="colTypecom" text="Type" prefWidth="90"/>
-                        <TableColumn fx:id="colPaye" text="Payé" prefWidth="55"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="280"/>
-                    </columns>
-                </TableView>
-            </VBox>
-
-            <!-- Formulaire / Détails (Droite) -->
-            <VBox styleClass="card form-card" spacing="12">
-                <Label text="Détails de la commande" styleClass="card-title"/>
-                <Label fx:id="modeLabel" text="Mode : Création" styleClass="card-subtitle"/>
-
-                <VBox spacing="5">
-                    <Label text="Client :"/>
-                    <TextField fx:id="nomcliField" promptText="Nom du client"/>
+                    <TableView fx:id="commandeTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+                            <TableColumn fx:id="colNomcli" prefWidth="110.0" text="Client" />
+                            <TableColumn fx:id="colTypecom" prefWidth="90.0" text="Type" />
+                            <TableColumn fx:id="colPaye" prefWidth="60.0" text="Payé" />
+                            <TableColumn fx:id="colActions" prefWidth="240.0" text="Actions" />
+                        </columns>
+                    </TableView>
                 </VBox>
 
-                <VBox spacing="5">
-                    <Label text="Type de commande :"/>
-                    <ComboBox fx:id="typecomComboBox" maxWidth="Infinity"/>
+                <VBox spacing="12.0" styleClass="dashboard-card">
+                    <Label styleClass="card-title" text="Détails de la commande" />
+                    <Label fx:id="modeLabel" styleClass="subtitle" text="Mode : Création" />
+
+                    <VBox spacing="5.0">
+                        <Label styleClass="subtitle" text="Client :" />
+                        <TextField fx:id="nomcliField" promptText="Nom du client" />
+                    </VBox>
+
+                    <VBox spacing="5.0">
+                        <Label styleClass="subtitle" text="Type de commande :" />
+                        <ComboBox fx:id="typecomComboBox" maxWidth="Infinity" styleClass="combo-box" />
+                    </VBox>
+
+                    <VBox spacing="5.0">
+                        <Label styleClass="subtitle" text="Table :" />
+                        <ComboBox fx:id="tableComboBox" maxWidth="Infinity" styleClass="combo-box" />
+                    </VBox>
+
+                    <Separator styleClass="separator" />
+
+                    <Label styleClass="card-title" text="Lignes de commande" />
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <ComboBox fx:id="platComboBox" maxWidth="Infinity" promptText="Sélectionner un plat" styleClass="combo-box" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="quantiteField" prefWidth="60.0" promptText="Qté" />
+                        <Button onAction="#onAjouterLigne" styleClass="button-secondary" text="Ajouter" />
+                    </HBox>
+
+                    <TableView fx:id="lignesTable" prefHeight="160.0">
+                        <columns>
+                            <TableColumn fx:id="colLignePlat" prefWidth="130.0" text="Plat" />
+                            <TableColumn fx:id="colLigneQuantite" prefWidth="50.0" text="Qté" />
+                            <TableColumn fx:id="colLignePu" prefWidth="70.0" text="PU" />
+                            <TableColumn fx:id="colLigneActions" prefWidth="50.0" text="" />
+                        </columns>
+                    </TableView>
+
+                    <Label fx:id="totalLabel" styleClass="card-title" text="Total : 0" />
+
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Button maxWidth="Infinity" onAction="#onSave" styleClass="button" text="Enregistrer" HBox.hgrow="ALWAYS" />
+                    </HBox>
+
+                    <Label fx:id="errorLabel" styleClass="error-label" wrapText="true" />
                 </VBox>
-
-                <VBox spacing="5">
-                    <Label text="Table :"/>
-                    <ComboBox fx:id="tableComboBox" maxWidth="Infinity"/>
-                </VBox>
-
-                <Separator/>
-
-                <Label text="Lignes de commande" styleClass="card-title"/>
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <ComboBox fx:id="platComboBox" promptText="Sélectionner un plat" maxWidth="Infinity"/>
-                    <TextField fx:id="quantiteField" promptText="Qté" prefWidth="60"/>
-                    <Button text="Ajouter" onAction="#onAjouterLigne" styleClass="button-secondary"/>
-                </HBox>
-
-                <TableView fx:id="lignesTable" prefHeight="160">
-                    <columns>
-                        <TableColumn fx:id="colLignePlat" text="Plat" prefWidth="140"/>
-                        <TableColumn fx:id="colLigneQuantite" text="Qté" prefWidth="50"/>
-                        <TableColumn fx:id="colLignePu" text="PU" prefWidth="70"/>
-                        <TableColumn fx:id="colLigneActions" text="" prefWidth="50"/>
-                    </columns>
-                </TableView>
-
-                <Label fx:id="totalLabel" text="Total : 0" styleClass="card-title"/>
-
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Button text="Enregistrer" onAction="#onSave" styleClass="button-primary" maxWidth="Infinity"/>
-                </HBox>
-
-                <Label fx:id="errorLabel" wrapText="true" styleClass="error-label"/>
-            </VBox>
-
+            </items>
         </SplitPane>
     </center>
 

@@ -42,7 +42,7 @@ public class PdfReceiptService {
         restaurantName.setAlignment(Element.ALIGN_CENTER);
         document.add(restaurantName);
 
-        Paragraph title = new Paragraph("REÇU DE COMMANDE", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10));
+        Paragraph title = new Paragraph("REÇU", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10));
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 
@@ -60,7 +60,6 @@ public class PdfReceiptService {
         document.add(new Paragraph("Service : " + typeService, normalFont));
 
 
-        document.add(new Paragraph("----------------------------------------------------------------", normalFont));
 
         // Tableau des plats
         PdfPTable table = new PdfPTable(3);
@@ -97,7 +96,6 @@ public class PdfReceiptService {
 
         document.add(table);
 
-        document.add(new Paragraph("----------------------------------------------------------------", normalFont));
 
         // Total
         Paragraph totalPara = new Paragraph("TOTAL À PAYER : " + totalGeneral + " Ar", titleFont);

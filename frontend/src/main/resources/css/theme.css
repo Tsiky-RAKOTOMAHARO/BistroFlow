@@ -1,0 +1,11 @@
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", "Helvetica", sans-serif;
+    -bg-main: #0C101D;
+    -surface-card: #192857;
+    -primary: #4F6DCF;
+    -primary-hover: #DFE4F6;
+    -text-main: #FFFFFF;
+    -text-muted: #DFE4F6;
+    -border-color: #192857;
+    -fx-background-color: -bg-main;
+}

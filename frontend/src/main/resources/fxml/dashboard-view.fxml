@@ -3,62 +3,59 @@
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.projet.ui.controller.DashboardController"
-      style="-fx-padding: 20;">
+<VBox 
+    spacing="24.0" 
+    styleClass="dashboard-root" 
+    stylesheets="@/css/dashboard.css" 
+    xmlns="http://javafx.com/javafx/21" 
+    xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.projet.ui.controller.DashboardController">
 
-    <!-- En-tête -->
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Dashboard" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
-        <Button text="Actualiser" onAction="#onRefresh" />
-        <Label fx:id="errorLabel" textFill="RED" />
+    <HBox alignment="CENTER_LEFT" spacing="15.0">
+        <Label styleClass="page-title" text="Dashboard" />
+        <Label fx:id="errorLabel" styleClass="error-label" />
     </HBox>
 
-    <!-- Cartes KPI (Recette, Tables, Menus) -->
-    <HBox spacing="15.0">
-        <VBox style="-fx-background-color:; -fx-padding: 15; -fx-background-radius: 8;">
-            <Label text="Recette Totale"  style="-fx-font-size: 14px;" />
-            <Label fx:id="totalRecetteLabel" text="0 Ar" textFill="WHITE" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+    <HBox spacing="24.0">
+        <VBox styleClass="kpi-card">
+            <Label styleClass="kpi-title" text="Recette Totale" />
+            <Label fx:id="totalRecetteLabel" styleClass="kpi-value" text="0 Ar" />
         </VBox>
-        <VBox style="-fx-background-color:; -fx-padding: 15; -fx-background-radius: 8;">
-            <Label text="Nombre de Tables"  style="-fx-font-size: 14px;" />
-            <Label fx:id="totalTablesLabel" text="0" textFill="WHITE" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+        <VBox styleClass="kpi-card">
+            <Label styleClass="kpi-title" text="Nombre de Tables" />
+            <Label fx:id="totalTablesLabel" styleClass="kpi-value" text="0" />
         </VBox>
-        <VBox style="-fx-background-color:; -fx-padding: 15; -fx-background-radius: 8;">
-            <Label text="Plats Actifs" textFill="WHITE" style="-fx-font-size: 14px;" />
-            <Label fx:id="totalMenusLabel" text="0" textFill="WHITE" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+        <VBox styleClass="kpi-card">
+            <Label styleClass="kpi-title" text="Plats Actifs" />
+            <Label fx:id="totalMenusLabel" styleClass="kpi-value" text="0" />
         </VBox>
     </HBox>
 
-    <!-- Graphiques et Tableaux -->
-    <HBox spacing="20.0">
-        <!-- Diagramme en bâtons sur 6 mois -->
-        <VBox  style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 10;">
-            <Label text="Évolution sur les 6 Derniers Mois" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+    <HBox spacing="24.0">
+        <VBox styleClass="dashboard-card">
+            <Label styleClass="card-title" text="Évolution sur les 6 Derniers Mois" />
             <BarChart fx:id="monthlyBarChart">
                 <xAxis>
-                    <CategoryAxis label="Mois" />
+                    <CategoryAxis label="Mois" side="BOTTOM" />
                 </xAxis>
                 <yAxis>
-                    <NumberAxis label="Valeur" />
+                    <NumberAxis label="Valeur" side="LEFT" />
                 </yAxis>
             </BarChart>
         </VBox>
 
-        <!-- Top 10 Plats -->
-        <VBox prefWidth="320" style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 10;">
-            <Label text="Top 10 Plats les Plus Commandés" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+        <VBox prefWidth="380.0" styleClass="dashboard-card">
+            <Label styleClass="card-title" text="Top 10 Plats les Plus Commandés" />
             <TableView fx:id="topPlatsTable">
                 <columns>
-                    <TableColumn fx:id="colNomPlat" text="Plat" prefWidth="200" />
-                    <TableColumn fx:id="colQuantite" text="Ventes" prefWidth="90" />
+                    <TableColumn fx:id="colNomPlat" prefWidth="220.0" text="Plat" />
+                    <TableColumn fx:id="colQuantite" prefWidth="90.0" text="Ventes" />
                 </columns>
             </TableView>
         </VBox>
