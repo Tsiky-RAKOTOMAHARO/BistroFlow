@@ -87,7 +87,7 @@ public class DashboardViewModel {
                     .collect(Collectors.toList());
             topPlatsData.setAll(top10);
 
-            buildMonthlyChart(commandes, menuMap);
+            buildMonthlyChart(commandes);
 
             errorMessage.set("");
         } catch (Exception e) {
@@ -95,12 +95,8 @@ public class DashboardViewModel {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void buildMonthlyChart(List<CommandeDTO> commandes, Map<String, MenuDTO> menuMap) {
+    private void buildMonthlyChart(List<CommandeDTO> commandes) {
         monthlyChartData.clear();
-
-        XYChart.Series<String, Number> seriesRecette = new XYChart.Series<>();
-        seriesRecette.setName("Recette Totale");
 
         XYChart.Series<String, Number> seriesCommandes = new XYChart.Series<>();
         seriesCommandes.setName("Nombre de Commandes");
@@ -112,7 +108,6 @@ public class DashboardViewModel {
             YearMonth month = currentMonth.minusMonths(i);
             String monthLabel = month.format(formatter);
 
-            long monthRevenue = 0;
             int monthOrders = 0;
 
             for (CommandeDTO cmd : commandes) {
@@ -120,20 +115,13 @@ public class DashboardViewModel {
                 
                 if (cmdMonth.equals(month)) {
                     monthOrders++;
-                    if (Boolean.TRUE.equals(cmd.isPaye()) && cmd.getLignes() != null) {
-                        for (LigneCommandeDTO l : cmd.getLignes()) {
-                            MenuDTO m = menuMap.get(l.getIdplat());
-                            monthRevenue += (long) (m != null ? m.getPu() : 0) * l.getQuantite();
-                        }
-                    }
                 }
             }
 
-            seriesRecette.getData().add(new XYChart.Data<>(monthLabel, monthRevenue));
             seriesCommandes.getData().add(new XYChart.Data<>(monthLabel, monthOrders));
         }
 
-        monthlyChartData.addAll(seriesRecette, seriesCommandes);
+        monthlyChartData.add(seriesCommandes);
     }
 
     public LongProperty recetteTotaleProperty() { return recetteTotale; }

@@ -37,14 +37,18 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Désactivation des animations pour éviter les exceptions d'affichage JavaFX lors des rafraîchissements
+        monthlyBarChart.setAnimated(false);
+        monthlyBarChart.setData(viewModel.getMonthlyChartData());
+
+        // Liaison et formatage de la recette totale
         viewModel.recetteTotaleProperty().addListener((obs, oldVal, newVal) ->
-                totalRecetteLabel.setText(String.format("%,d", newVal) + " Ar"));
+                totalRecetteLabel.setText(String.format("%,d", newVal.longValue()) + " Ar"));
+        totalRecetteLabel.setText(String.format("%,d", viewModel.recetteTotaleProperty().get()) + " Ar");
 
         totalTablesLabel.textProperty().bind(viewModel.totalTablesProperty().asString());
         totalMenusLabel.textProperty().bind(viewModel.totalMenusProperty().asString());
         errorLabel.textProperty().bind(viewModel.errorMessageProperty());
-
-        monthlyBarChart.setData(viewModel.getMonthlyChartData());
 
         colNomPlat.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().nomplat()));
         colQuantite.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().quantite()).asObject());
