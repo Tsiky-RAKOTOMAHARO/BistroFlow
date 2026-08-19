@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -9,38 +10,61 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox 
-    spacing="24.0" 
-    styleClass="dashboard-root" 
-    stylesheets="@/css/dashboard.css" 
-    xmlns="http://javafx.com/javafx/21" 
-    xmlns:fx="http://javafx.com/fxml/1" 
-    fx:controller="com.projet.ui.controller.DashboardController">
+<VBox spacing="24.0" 
+      styleClass="dashboard-root" 
+      stylesheets="@/css/dashboard.css" 
+      xmlns="http://javafx.com/javafx/21" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.projet.ui.controller.DashboardController">
 
+    <padding>
+        <Insets top="24.0" right="28.0" bottom="24.0" left="28.0" />
+    </padding>
+
+    <!-- En-tête -->
     <HBox alignment="CENTER_LEFT" spacing="15.0">
         <Label styleClass="page-title" text="Dashboard" />
         <Label fx:id="errorLabel" styleClass="error-label" />
     </HBox>
 
-    <HBox spacing="24.0">
-        <VBox styleClass="kpi-card">
+    <!-- Cartes KPI Generouses avec couleurs harmonieuses -->
+    <HBox spacing="20.0" maxWidth="Infinity">
+        <VBox minHeight="130.0" spacing="10.0" alignment="CENTER_LEFT" 
+              styleClass="kpi-card, kpi-primary" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+            <padding>
+                <Insets top="20.0" right="24.0" bottom="20.0" left="24.0" />
+            </padding>
             <Label styleClass="kpi-title" text="Recette Totale" />
             <Label fx:id="totalRecetteLabel" styleClass="kpi-value" text="0 Ar" />
         </VBox>
-        <VBox styleClass="kpi-card">
+
+        <VBox minHeight="130.0" spacing="10.0" alignment="CENTER_LEFT" 
+              styleClass="kpi-card, kpi-success" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+            <padding>
+                <Insets top="20.0" right="24.0" bottom="20.0" left="24.0" />
+            </padding>
             <Label styleClass="kpi-title" text="Nombre de Tables" />
             <Label fx:id="totalTablesLabel" styleClass="kpi-value" text="0" />
         </VBox>
-        <VBox styleClass="kpi-card">
+
+        <VBox minHeight="130.0" spacing="10.0" alignment="CENTER_LEFT" 
+              styleClass="kpi-card, kpi-info" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+            <padding>
+                <Insets top="20.0" right="24.0" bottom="20.0" left="24.0" />
+            </padding>
             <Label styleClass="kpi-title" text="Plats Actifs" />
             <Label fx:id="totalMenusLabel" styleClass="kpi-value" text="0" />
         </VBox>
     </HBox>
 
-    <HBox spacing="24.0">
-        <VBox styleClass="dashboard-card">
+    <!-- Zone principale -->
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <VBox styleClass="dashboard-card" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+            </padding>
             <Label styleClass="card-title" text="Évolution sur les 6 Derniers Mois" />
-            <BarChart fx:id="monthlyBarChart">
+            <BarChart fx:id="monthlyBarChart" VBox.vgrow="ALWAYS" legendVisible="false">
                 <xAxis>
                     <CategoryAxis label="Mois" side="BOTTOM" />
                 </xAxis>
@@ -50,11 +74,17 @@
             </BarChart>
         </VBox>
 
-        <VBox prefWidth="380.0" styleClass="dashboard-card">
+        <VBox prefWidth="380.0" minWidth="320.0" styleClass="dashboard-card" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+            </padding>
             <Label styleClass="card-title" text="Top 10 Plats les Plus Commandés" />
-            <TableView fx:id="topPlatsTable">
+            <TableView fx:id="topPlatsTable" VBox.vgrow="ALWAYS">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colNomPlat" prefWidth="220.0" text="Plat" />
+                    <TableColumn fx:id="colNomPlat" text="Plat" />
                     <TableColumn fx:id="colQuantite" prefWidth="90.0" text="Ventes" />
                 </columns>
             </TableView>

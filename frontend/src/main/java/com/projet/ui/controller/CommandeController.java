@@ -22,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -81,12 +80,30 @@ public class CommandeController implements Initializable {
         colNomcli.setCellValueFactory(new PropertyValueFactory<>("nomcli"));
         colTypecom.setCellValueFactory(new PropertyValueFactory<>("typecom"));
         colPaye.setCellValueFactory(new PropertyValueFactory<>("paye"));
+        
 
         colPaye.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : (item ? "Oui" : "Non"));
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item ? "Oui" : "Non");
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+
+        colTypecom.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText("sur_place".equals(item) ? "Sur place" : "À emporter");
+                }
             }
         });
 
@@ -129,7 +146,7 @@ public class CommandeController implements Initializable {
 
         platComboBox.setConverter(new StringConverter<>() {
             @Override
-            public String toString(MenuDTO menu) { return menu == null ? "" : menu.getNomplat() + " (" + menu.getPu() + ")"; }
+            public String toString(MenuDTO menu) { return menu == null ? "" : menu.getNomplat() + " (" + menu.getPu() + " Ar)"; }
             @Override
             public MenuDTO fromString(String string) { return null; }
         });
@@ -138,18 +155,24 @@ public class CommandeController implements Initializable {
         colLigneQuantite.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().quantite).asObject());
         colLignePu.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().pu).asObject());
 
+        // Bouton de suppression compact pour les lignes de commande
         colLigneActions.setCellFactory(col -> new TableCell<>() {
-            private final Button removeBtn = new Button("X");
+            private final Button removeBtn = new Button("✕");
             {
+                removeBtn.getStyleClass().add("btn-table-remove");
                 removeBtn.setOnAction(e -> {
-                    currentLignes.remove(getIndex());
-                    recalculerTotal();
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        currentLignes.remove(index);
+                        recalculerTotal();
+                    }
                 });
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : removeBtn);
+                setAlignment(Pos.CENTER);
             }
         });
 
@@ -165,9 +188,14 @@ public class CommandeController implements Initializable {
             private final Button editBtn = new Button("Modifier");
             private final Button payerBtn = new Button("Payer");
             private final Button detailsBtn = new Button("Détails");
-            private final Button deleteBtn = new Button("Supprimer");
+            private final Button deleteBtn = new Button("Suppr.");
 
             {
+                editBtn.getStyleClass().add("btn-table");
+                payerBtn.getStyleClass().add("btn-table");
+                detailsBtn.getStyleClass().add("btn-table");
+                deleteBtn.getStyleClass().addAll("btn-table", "btn-table-danger");
+
                 editBtn.setOnAction(event -> {
                     int index = getIndex();
                     if (index >= 0 && index < getTableView().getItems().size()) {
@@ -220,7 +248,7 @@ public class CommandeController implements Initializable {
                         payerBtn.setVisible(!isPaye);
                         payerBtn.setManaged(!isPaye);
                     }
-                    HBox container = new HBox(5, editBtn, payerBtn, detailsBtn, deleteBtn);
+                    HBox container = new HBox(4, editBtn, payerBtn, detailsBtn, deleteBtn);
                     container.setAlignment(Pos.CENTER);
                     setGraphic(container);
                 }
@@ -253,7 +281,7 @@ public class CommandeController implements Initializable {
         colPu.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().pu).asObject());
 
         detailsTable.getColumns().addAll(colPlat, colQte, colPu);
-        detailsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        detailsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         detailsTable.setPrefHeight(180);
 
         ObservableList<LigneAffichage> lines = FXCollections.observableArrayList();
@@ -269,11 +297,11 @@ public class CommandeController implements Initializable {
         }
         detailsTable.setItems(lines);
 
-        Label totalLbl = new Label("Total : " + total);
+        Label totalLbl = new Label("Total : " + total + " Ar");
         totalLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
         Button printBtn = new Button("Imprimer le reçu PDF");
-        printBtn.getStyleClass().add("button-primary");
+        printBtn.getStyleClass().add("button-secondary");
         printBtn.setMaxWidth(Double.MAX_VALUE);
         printBtn.setOnAction(e -> {
             dialog.close();
@@ -288,35 +316,35 @@ public class CommandeController implements Initializable {
     }
 
     private void handlePrintReceipt(CommandeDTO commande) {
-    if (commande == null) return;
+        if (commande == null) return;
 
-    FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Enregistrer le reçu PDF");
-    fileChooser.setInitialFileName("recu_commande_" + (commande.getIdcom() != null ? commande.getIdcom() : "ticket") + ".pdf");
-    fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Fichiers PDF (*.pdf)", "*.pdf")
-    );
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Enregistrer le reçu PDF");
+        fileChooser.setInitialFileName("recu_commande_" + (commande.getIdcom() != null ? commande.getIdcom() : "ticket") + ".pdf");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Fichiers PDF (*.pdf)", "*.pdf")
+        );
 
-    File file = fileChooser.showSaveDialog(commandeTable.getScene().getWindow());
-    if (file != null) {
-        try {
-            Map<String, MenuDTO> menuMap = menusDisponibles.stream()
-                    .collect(Collectors.toMap(MenuDTO::getIdplat, m -> m, (a, b) -> a));
+        File file = fileChooser.showSaveDialog(commandeTable.getScene().getWindow());
+        if (file != null) {
+            try {
+                Map<String, MenuDTO> menuMap = menusDisponibles.stream()
+                        .collect(Collectors.toMap(MenuDTO::getIdplat, m -> m, (a, b) -> a));
 
-            PdfReceiptService.generateReceipt(commande, menuMap, file);
-            viewModel.errorMessageProperty().set("");
+                PdfReceiptService.generateReceipt(commande, menuMap, file);
+                viewModel.errorMessageProperty().set("");
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Impression réussie");
-            alert.setHeaderText(null);
-            alert.setContentText("Le reçu PDF a été enregistré avec succès :\n" + file.getAbsolutePath());
-            alert.showAndWait();
-        } catch (Exception e) {
-            viewModel.errorMessageProperty().set("Erreur lors de la génération du PDF : " + e.getMessage());
-            e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Impression réussie");
+                alert.setHeaderText(null);
+                alert.setContentText("Le reçu PDF a été enregistré avec succès :\n" + file.getAbsolutePath());
+                alert.showAndWait();
+            } catch (Exception e) {
+                viewModel.errorMessageProperty().set("Erreur lors de la génération du PDF : " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
-}
 
     private void chargerListesReference() {
         try {
@@ -348,7 +376,7 @@ public class CommandeController implements Initializable {
 
     private void recalculerTotal() {
         int total = currentLignes.stream().mapToInt(l -> l.pu * l.quantite).sum();
-        totalLabel.setText("Total : " + total);
+        totalLabel.setText("Total : " + total + " Ar");
     }
 
     private void populateForm(CommandeDTO commande) {
@@ -457,7 +485,7 @@ public class CommandeController implements Initializable {
         dto.setNomcli(nomcli.trim());
         dto.setTypecom(typecom);
         dto.setIdtable("sur_place".equals(typecom) ? table.getIdtable() : null);
-        dto.setPaye(editingOriginal != null && editingOriginal.isPaye());
+        dto.setPaye(editingOriginal != null && Boolean.TRUE.equals(editingOriginal.isPaye()));
 
         if (editingOriginal != null) {
             dto.setIdcom(editingOriginal.getIdcom());

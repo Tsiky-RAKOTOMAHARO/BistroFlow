@@ -1,7 +1,10 @@
 .card {
     -fx-background-color: -surface-card;
-    -fx-background-radius: 15px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 20, 0, 0, 10);
+    -fx-background-radius: 14px;
+    -fx-border-color: rgba(223, 228, 246, 0.06);
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.35), 16, 0, 0, 6);
     -fx-padding: 24px;
 }
 
@@ -18,7 +21,7 @@
 
 .button:hover {
     -fx-background-color: -primary-hover;
-    -fx-text-fill: #0C101D;
+    -fx-text-fill: #FFFFFF;
 }
 
 .button:pressed {
@@ -27,37 +30,39 @@
 }
 
 .text-field, .password-field {
-    -fx-background-color: #192857;
+    -fx-background-color: #0C101D;
     -fx-background-radius: 10px;
-    -fx-border-color: #4F6DCF;
+    -fx-border-color: rgba(79, 109, 207, 0.4);
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
     -fx-padding: 12px 16px;
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: -text-main;
     -fx-font-size: 14px;
 }
 
 .text-field:focused, .password-field:focused {
     -fx-background-color: #0C101D;
-    -fx-border-color: #DFE4F6;
-    -fx-border-width: 2px;
-    -fx-effect: dropshadow(three-pass-box, rgba(223, 228, 246, 0.15), 10, 0, 0, 0);
+    -fx-border-color: -primary;
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(79, 109, 207, 0.25), 8, 0, 0, 0);
 }
 
 .title {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: -text-main;
 }
 
 .subtitle {
     -fx-font-size: 14px;
-    -fx-text-fill: #DFE4F6;
+    -fx-text-fill: -text-muted;
 }
 
 .sidebar {
     -fx-background-color: -surface-card;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 15, 0, 5, 0);
+    -fx-border-color: transparent rgba(223, 228, 246, 0.06) transparent transparent;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 12, 0, 4, 0);
     -fx-padding: 40 20 30 20;
 }
 
@@ -66,7 +71,6 @@
     -fx-font-weight: 900;
     -fx-text-fill: -primary;
     -fx-font-family: "Segoe UI Black", "Roboto", sans-serif;
-    -fx-letter-spacing: 1px;
     -fx-padding: 0 0 40 10;
 }
 
@@ -75,20 +79,21 @@
     -fx-text-fill: -text-muted;
     -fx-font-size: 15px;
     -fx-font-weight: 600;
-    -fx-padding: 14px 20px 14px 20px;
+    -fx-padding: 14px 20px;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
     -fx-alignment: center-left;
+    -fx-graphic-text-gap: 15px;
 }
 
 .menu-button:hover {
-    -fx-background-color: rgba(79, 109, 207, 0.2);
-    -fx-text-fill: -primary;
+    -fx-background-color: rgba(79, 109, 207, 0.15);
+    -fx-text-fill: -text-main;
     -fx-translate-x: 4px;
 }
 
 .menu-button:pressed {
-    -fx-background-color: rgba(79, 109, 207, 0.4);
+    -fx-background-color: rgba(79, 109, 207, 0.3);
     -fx-scale-x: 0.98;
     -fx-scale-y: 0.98;
     -fx-translate-x: 0px;
@@ -96,5 +101,5 @@
 
 .content-area {
     -fx-background-color: -bg-main;
-    -fx-padding: 30 30 30 30;
+    -fx-padding: 30px;
 }

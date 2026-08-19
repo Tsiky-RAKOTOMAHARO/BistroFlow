@@ -1,11 +1,24 @@
 .root {
     -fx-font-family: "Segoe UI", "Roboto", "Helvetica", sans-serif;
+    
+    /* Couleurs de base & Surfaces */
     -bg-main: #0C101D;
     -surface-card: #192857;
     -primary: #4F6DCF;
-    -primary-hover: #DFE4F6;
+    -primary-hover: #6381E8; /* Nuance plus claire et dynamique pour le survol */
+    
+    /* Textes */
     -text-main: #FFFFFF;
     -text-muted: #DFE4F6;
-    -border-color: #192857;
+    
+    /* Couleurs sémantiques (Statuts, Badges, Alertes) */
+    -success: #34D399;
+    -warning: #FBBF24;
+    -danger: #F87171;
+    -info: #38BDF8;
+    
+    /* Bordures & Séparateurs */
+    -border-color: rgba(223, 228, 246, 0.08);
+    
     -fx-background-color: -bg-main;
 }

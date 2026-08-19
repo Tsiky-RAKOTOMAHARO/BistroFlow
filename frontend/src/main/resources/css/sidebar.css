@@ -1,0 +1,55 @@
+/* Barre latérale (Sidebar) */
+.sidebar {
+    -fx-background-color: -bg-main;
+    -fx-border-color: -border-color;
+    -fx-border-width: 0 1px 0 0;
+}
+
+/* En-tête / Branding (Titre centré) */
+.brand-container {
+    -fx-padding: 8px 0;
+}
+
+.brand-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-main;
+}
+
+.brand-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: -text-muted;
+    -fx-opacity: 0.7;
+}
+
+/* Séparateur */
+.sidebar-separator *.line {
+    -fx-border-color: -border-color;
+    -fx-border-width: 1px;
+}
+
+/* Boutons de navigation */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 14px;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: derive(-primary, -65%);
+    -fx-text-fill: -text-main;
+}
+
+.menu-button:focused, .menu-button:active {
+    -fx-background-color: -primary;
+    -fx-text-fill: -text-main;
+}
+
+/* Zone centrale principale */
+.content-area {
+    -fx-background-color: derive(-bg-main, -15%);
+}

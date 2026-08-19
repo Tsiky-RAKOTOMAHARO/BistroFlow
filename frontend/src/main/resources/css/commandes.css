@@ -140,3 +140,66 @@
     -fx-background-color: rgba(79, 109, 207, 0.2);
     -fx-text-fill: #FFFFFF;
 }
+/* Fix pour le carré blanc en haut à droite des TableView */
+.table-view .column-header-background .filler,
+.table-view .corner,
+.table-view .show-hide-columns-button {
+    -fx-background-color: #0C101D;
+}
+
+/* Style compact pour les boutons à l'intérieur des tableaux */
+.btn-table {
+    -fx-background-color: #192857;
+    -fx-border-color: #4F6DCF;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-text-fill: #DFE4F6;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 8px;
+    -fx-cursor: hand;
+}
+
+.btn-table:hover {
+    -fx-background-color: #4F6DCF;
+    -fx-text-fill: #FFFFFF;
+}
+
+.btn-table-danger {
+    -fx-border-color: #E53E3E;
+    -fx-text-fill: #FEB2B2;
+}
+
+.btn-table-danger:hover {
+    -fx-background-color: #E53E3E;
+    -fx-text-fill: #FFFFFF;
+}
+
+.btn-table-remove {
+    -fx-background-color: rgba(229, 62, 62, 0.2);
+    -fx-border-color: #E53E3E;
+    -fx-text-fill: #FEB2B2;
+    -fx-font-size: 11px;
+    -fx-padding: 2px 8px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+/* Carte compacte pour la barre de recherche */
+.dashboard-card-compact {
+    -fx-background-color: #111827;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
+}
+
+/* Transparence du défilement principal */
+.transparent-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.transparent-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
