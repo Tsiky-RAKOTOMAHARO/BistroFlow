@@ -3,11 +3,13 @@ package com.projet.ui.controller;
 import com.projet.common.dto.CommandeDTO;
 import com.projet.common.dto.LigneCommandeDTO;
 import com.projet.common.dto.MenuDTO;
+import com.projet.common.dto.ReserverDTO;
 import com.projet.common.dto.TableDTO;
 import com.projet.ui.config.AppContext;
 import com.projet.ui.services.PdfReceiptService;
 import com.projet.ui.viewmodel.CommandeViewModel;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,15 +17,20 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -53,6 +60,7 @@ public class CommandeController implements Initializable {
     @FXML private TableColumn<CommandeDTO, Void> colActions;
 
     @FXML private TextField searchField;
+    @FXML private ComboBox<ReserverDTO> reservationComboBox; // Nouveau composant FXML
     @FXML private TextField nomcliField;
     @FXML private ComboBox<String> typecomComboBox;
     @FXML private ComboBox<TableDTO> tableComboBox;
@@ -70,6 +78,7 @@ public class CommandeController implements Initializable {
 
     private final ObservableList<LigneAffichage> currentLignes = FXCollections.observableArrayList();
     private List<MenuDTO> menusDisponibles = List.of();
+    private List<ReserverDTO> reservationsAujourdhui = new ArrayList<>();
 
     private CommandeDTO editingOriginal;
     private final CommandeViewModel viewModel = new CommandeViewModel(AppContext.getCommandeService());
@@ -80,7 +89,6 @@ public class CommandeController implements Initializable {
         colNomcli.setCellValueFactory(new PropertyValueFactory<>("nomcli"));
         colTypecom.setCellValueFactory(new PropertyValueFactory<>("typecom"));
         colPaye.setCellValueFactory(new PropertyValueFactory<>("paye"));
-        
 
         colPaye.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -120,6 +128,31 @@ public class CommandeController implements Initializable {
             }
         });
 
+        // Config de la liste déroulante des Réservations du jour
+        reservationComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(ReserverDTO r) {
+                if (r == null) return "";
+                String client = (r.getNomcli() != null && !r.getNomcli().isBlank()) ? r.getNomcli() : "Client inconnu";
+                return client + " (Table : " + (r.getIdtable() != null ? r.getIdtable() : "N/A") + ")";
+            }
+
+            @Override
+            public ReserverDTO fromString(String string) { return null; }
+        });
+
+        reservationComboBox.valueProperty().addListener((obs, oldVal, selectedRes) -> {
+            if (selectedRes != null) {
+                if (selectedRes.getNomcli() != null) {
+                    nomcliField.setText(selectedRes.getNomcli());
+                }
+                typecomComboBox.setValue("sur_place");
+                if (selectedRes.getIdtable() != null) {
+                    selectTableById(selectedRes.getIdtable());
+                }
+            }
+        });
+
         typecomComboBox.setItems(FXCollections.observableArrayList("sur_place", "emporter"));
         typecomComboBox.setConverter(new StringConverter<>() {
             @Override
@@ -155,7 +188,6 @@ public class CommandeController implements Initializable {
         colLigneQuantite.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().quantite).asObject());
         colLignePu.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().pu).asObject());
 
-        // Bouton de suppression compact pour les lignes de commande
         colLigneActions.setCellFactory(col -> new TableCell<>() {
             private final Button removeBtn = new Button("✕");
             {
@@ -219,7 +251,7 @@ public class CommandeController implements Initializable {
                     if (index >= 0 && index < getTableView().getItems().size()) {
                         CommandeDTO commande = getTableView().getItems().get(index);
                         if (commande != null) {
-                            showDetailsDialog(commande);
+                            Platform.runLater(() -> showDetailsDialog(commande));
                         }
                     }
                 });
@@ -256,64 +288,88 @@ public class CommandeController implements Initializable {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void showDetailsDialog(CommandeDTO commande) {
-        Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Détails de la commande " + commande.getIdcom());
-        dialog.setHeaderText("Récapitulatif - Commande #" + commande.getIdcom());
+    Stage detailStage = new Stage();
+    detailStage.setTitle("Détails de la commande " + commande.getIdcom());
 
-        VBox content = new VBox(10);
-        content.setPrefWidth(420);
-
-        Label clientLbl = new Label("Client : " + (commande.getNomcli() != null ? commande.getNomcli() : "-"));
-        String typeTxt = "sur_place".equals(commande.getTypecom()) ? "Sur place" : "À emporter";
-        Label typeLbl = new Label("Type : " + typeTxt);
-        Label payeLbl = new Label("Statut : " + (Boolean.TRUE.equals(commande.isPaye()) ? "Payé" : "Non payé"));
-
-        TableView<LigneAffichage> detailsTable = new TableView<>();
-        TableColumn<LigneAffichage, String> colPlat = new TableColumn<>("Plat");
-        colPlat.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().nomplat));
-
-        TableColumn<LigneAffichage, Integer> colQte = new TableColumn<>("Qté");
-        colQte.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().quantite).asObject());
-
-        TableColumn<LigneAffichage, Integer> colPu = new TableColumn<>("PU");
-        colPu.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().pu).asObject());
-
-        detailsTable.getColumns().addAll(colPlat, colQte, colPu);
-        detailsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        detailsTable.setPrefHeight(180);
-
-        ObservableList<LigneAffichage> lines = FXCollections.observableArrayList();
-        int total = 0;
-        if (commande.getLignes() != null) {
-            for (LigneCommandeDTO l : commande.getLignes()) {
-                MenuDTO m = trouverMenu(l.getIdplat());
-                String nom = m != null ? m.getNomplat() : l.getIdplat();
-                int pu = m != null ? m.getPu() : 0;
-                lines.add(new LigneAffichage(l.getIdplat(), nom, pu, l.getQuantite()));
-                total += pu * l.getQuantite();
-            }
-        }
-        detailsTable.setItems(lines);
-
-        Label totalLbl = new Label("Total : " + total + " Ar");
-        totalLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
-        Button printBtn = new Button("Imprimer le reçu PDF");
-        printBtn.getStyleClass().add("button-secondary");
-        printBtn.setMaxWidth(Double.MAX_VALUE);
-        printBtn.setOnAction(e -> {
-            dialog.close();
-            handlePrintReceipt(commande);
-        });
-
-        content.getChildren().addAll(clientLbl, typeLbl, payeLbl, detailsTable, totalLbl, printBtn);
-
-        dialog.getDialogPane().setContent(content);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        dialog.showAndWait();
+    // Fige le comportement par rapport à la fenêtre principale
+    if (commandeTable != null && commandeTable.getScene() != null && commandeTable.getScene().getWindow() != null) {
+        detailStage.initOwner(commandeTable.getScene().getWindow());
     }
+    detailStage.initModality(Modality.WINDOW_MODAL);
+    detailStage.setResizable(false); // Impêche tout recalcul dynamique de taille
+
+    VBox content = new VBox(10);
+    content.setStyle("-fx-padding: 15; -fx-background-color: white;");
+    content.setPrefWidth(420);
+
+    Label headerLbl = new Label("Récapitulatif - Commande #" + commande.getIdcom());
+    headerLbl.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+    Label clientLbl = new Label("Client : " + (commande.getNomcli() != null ? commande.getNomcli() : "-"));
+    String typeTxt = "sur_place".equals(commande.getTypecom()) ? "Sur place" : "À emporter";
+    Label typeLbl = new Label("Type : " + typeTxt);
+    Label payeLbl = new Label("Statut : " + (Boolean.TRUE.equals(commande.isPaye()) ? "Payé" : "Non payé"));
+
+    TableView<LigneAffichage> detailsTable = new TableView<>();
+
+    TableColumn<LigneAffichage, String> colPlat = new TableColumn<>("Plat");
+    colPlat.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().nomplat));
+    colPlat.setPrefWidth(200);
+
+    TableColumn<LigneAffichage, Integer> colQte = new TableColumn<>("Qté");
+    colQte.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().quantite).asObject());
+    colQte.setPrefWidth(80);
+
+    TableColumn<LigneAffichage, Integer> colPu = new TableColumn<>("PU");
+    colPu.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().pu).asObject());
+    colPu.setPrefWidth(100);
+
+    detailsTable.getColumns().add(colPlat);
+    detailsTable.getColumns().add(colQte);
+    detailsTable.getColumns().add(colPu);
+    detailsTable.setPrefHeight(180);
+
+    ObservableList<LigneAffichage> lines = FXCollections.observableArrayList();
+    int total = 0;
+    if (commande.getLignes() != null) {
+        for (LigneCommandeDTO l : commande.getLignes()) {
+            MenuDTO m = trouverMenu(l.getIdplat());
+            String nom = m != null ? m.getNomplat() : l.getIdplat();
+            int pu = m != null ? m.getPu() : 0;
+            lines.add(new LigneAffichage(l.getIdplat(), nom, pu, l.getQuantite()));
+            total += pu * l.getQuantite();
+        }
+    }
+    detailsTable.setItems(lines);
+
+    Label totalLbl = new Label("Total : " + total + " Ar");
+    totalLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+    Button printBtn = new Button("Imprimer le reçu PDF");
+    printBtn.getStyleClass().add("button-secondary");
+    printBtn.setMaxWidth(Double.MAX_VALUE);
+    printBtn.setOnAction(e -> {
+        detailStage.close();
+        handlePrintReceipt(commande);
+    });
+
+    Button closeBtn = new Button("Fermer");
+    closeBtn.setMaxWidth(Double.MAX_VALUE);
+    closeBtn.setOnAction(e -> detailStage.close());
+
+    content.getChildren().addAll(headerLbl, clientLbl, typeLbl, payeLbl, detailsTable, totalLbl, printBtn, closeBtn);
+
+    Scene scene = new Scene(content);
+    
+    // Conserve le style CSS principal si présent
+    if (commandeTable.getScene() != null && !commandeTable.getScene().getStylesheets().isEmpty()) {
+        scene.getStylesheets().addAll(commandeTable.getScene().getStylesheets());
+    }
+
+    detailStage.setScene(scene);
+    detailStage.showAndWait();
+}
 
     private void handlePrintReceipt(CommandeDTO commande) {
         if (commande == null) return;
@@ -347,15 +403,28 @@ public class CommandeController implements Initializable {
     }
 
     private void chargerListesReference() {
-        try {
-            tableComboBox.getItems().setAll(AppContext.getTableService().getAll());
-            menusDisponibles = AppContext.getMenuService().getAll().stream()
-                    .filter(m -> Boolean.TRUE.equals(m.isActif()))
-                    .collect(Collectors.toList());
-            platComboBox.getItems().setAll(menusDisponibles);
-        } catch (Exception e) {
-            errorLabel.setText("Impossible de charger les données de référence : " + e.getMessage());
-        }
+    try {
+        tableComboBox.getItems().setAll(AppContext.getTableService().getAll());
+        menusDisponibles = AppContext.getMenuService().getAll().stream()
+                .filter(m -> Boolean.TRUE.equals(m.isActif()))
+                .collect(Collectors.toList());
+        platComboBox.getItems().setAll(menusDisponibles);
+
+        // Correction : extraction de la date uniquement avec .toLocalDate()
+        LocalDate aujourdhui = LocalDate.now();
+        reservationsAujourdhui = AppContext.getReserverService().getAll().stream()
+                .filter(r -> r.getDate_reserve() != null && r.getDate_reserve().toLocalDate().equals(aujourdhui))
+                .collect(Collectors.toList());
+
+        reservationComboBox.getItems().setAll(reservationsAujourdhui);
+
+    } catch (Exception e) {
+        errorLabel.setText("Impossible de charger les données de référence : " + e.getMessage());
+    }
+}
+
+    public List<ReserverDTO> getReservationsAujourdhui() {
+        return reservationsAujourdhui;
     }
 
     private void selectTableById(String idtable) {
@@ -381,6 +450,7 @@ public class CommandeController implements Initializable {
 
     private void populateForm(CommandeDTO commande) {
         editingOriginal = commande;
+        reservationComboBox.getSelectionModel().clearSelection();
         nomcliField.setText(commande.getNomcli());
         typecomComboBox.setValue(commande.getTypecom());
         selectTableById(commande.getIdtable());
@@ -400,6 +470,7 @@ public class CommandeController implements Initializable {
 
     private void resetFormFields() {
         editingOriginal = null;
+        reservationComboBox.getSelectionModel().clearSelection();
         nomcliField.clear();
         typecomComboBox.getSelectionModel().clearSelection();
         tableComboBox.getSelectionModel().clearSelection();

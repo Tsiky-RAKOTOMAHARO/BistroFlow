@@ -13,7 +13,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main-layout.fxml"));
-        Scene scene = new Scene(loader.load(), 1100, 700);
+        Scene scene = new Scene(loader.load(), 1100, 700); 
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
         primaryStage.getIcons().add(
@@ -23,6 +23,8 @@ public class App extends Application {
         primaryStage.setTitle("BistroFlow");
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setMinWidth(1100);
+        primaryStage.setMinHeight(700);
     }
 
     public static void main(String[] args) {

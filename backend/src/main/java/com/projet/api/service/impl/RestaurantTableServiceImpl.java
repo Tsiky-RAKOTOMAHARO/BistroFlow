@@ -25,6 +25,7 @@ public class RestaurantTableServiceImpl implements RestaurantTableService{
     @Override
     public List<TableDTO> getAll() {
         return tableRepository.findAll().stream()
+            .filter(RestaurantTable::isActif)
             .map(tableMapper::toDTO)
             .collect(Collectors.toList());
     }
@@ -87,6 +88,7 @@ public class RestaurantTableServiceImpl implements RestaurantTableService{
         List<RestaurantTable> resultats = tableRepository.findByDesignationContainingIgnoreCase(keyword);
 
         return resultats.stream()
+            .filter(RestaurantTable::isActif)
             .map(tableMapper::toDTO)
             .collect(Collectors.toList());
     }

@@ -27,6 +27,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<MenuDTO> getAll() {
         return menuRepository.findAll().stream()
+                .filter(Menu::isActif)
                 .map(menuMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -94,6 +95,7 @@ public class MenuServiceImpl implements MenuService {
     List<Menu> resultats = menuRepository.findByNomplatContainingIgnoreCase(keyword);
 
         return resultats.stream()
+            .filter(Menu::isActif)
             .map(menuMapper::toDTO)
             .collect(Collectors.toList());
     }
